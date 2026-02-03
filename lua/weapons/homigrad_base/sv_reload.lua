@@ -53,7 +53,7 @@ end
 
 local function SafeCheck(ply, ent, dist)
 	if not IsValid(ply) and not ply:Alive() then return false end
-	if ply:GetNetVar("carryent2") ~= ent or dist then FailSafe(ply) return false end
+	if (ply:GetNetVar("carryent2") ~= ent and not IsValid(ply.FakeRagdoll)) or dist then FailSafe(ply) return false end
 
 	local org = ply.organism
 	if org.rarmamputated and org.larmamputated then FailSafe(ply) return false end

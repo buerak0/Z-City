@@ -89,7 +89,7 @@ hook.Add("radialOptions", "PlaceBipod", function()
 end)
 
 hook.Add("StartCommand", "reloadfloorweapon", function(ply, cmd)
-    if IsValid(ply) and ply:Alive() and ply:GetNW2Bool("FloorReloading", false) then
+    if IsValid(ply) and ply:Alive() and ply:GetNW2Bool("FloorReloading", false) and not IsValid(ply.FakeRagdoll) then
 		cmd:AddKey(IN_DUCK)
 		cmd:RemoveKey(IN_JUMP)
     end
