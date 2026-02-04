@@ -21,10 +21,7 @@ SWEP.SlotPos = 1
 SWEP.WorkWithFake = true
 SWEP.offsetVec = Vector(3, -2.5, -1)
 SWEP.offsetAng = Angle(-30, 20, -90)
-<<<<<<< HEAD
-=======
 SWEP.ModelScale = 0.7
->>>>>>> d52f111c617d26586873c5579ed7f2da1efa0c8c
 SWEP.modeNames = {
 	[1] = "analgesia"
 }

@@ -27,10 +27,7 @@ hook.Add("PlayerCollide", "Fake", function(ply, ent, data)
 end)
 
 hook.Add("OnPlayerHitGround","fallStun",function(ply,inwater,onfloater,speed)
-<<<<<<< HEAD
-=======
 	if IsValid(ply.FakeRagdoll) then return true end
->>>>>>> d52f111c617d26586873c5579ed7f2da1efa0c8c
 	local tr = {}
 	tr.start = ply:GetPos()
 	tr.endpos = ply:GetPos() - vector_up * 2

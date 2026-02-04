@@ -15,16 +15,10 @@ function MODE.GuiltCheck(Attacker, Victim, add, harm, amt)
 end
 
 function MODE:CanLaunch()
-<<<<<<< HEAD
-	local points = zb.GetMapPoints( "HMCD_TDM_T" )
-	local points2 = zb.GetMapPoints( "HMCD_TDM_CT" )
-    return (#points > 0) and (#points2 > 0)
-=======
 	return true
 	--[[local points = zb.GetMapPoints( "HMCD_TDM_T" )
 	local points2 = zb.GetMapPoints( "HMCD_TDM_CT" )
     return (#points > 0) and (#points2 > 0)]] -- can work without them
->>>>>>> d52f111c617d26586873c5579ed7f2da1efa0c8c
 end
 
 MODE.ForBigMaps = true

@@ -628,17 +628,6 @@ function hg.SetFreemove(ply, set)
 	if set then
 		ply.lastFakeTime = hg_ragdollcombat:GetBool() and 9999 or 1
 		ply.lastFake = CurTime() + ply.lastFakeTime
-<<<<<<< HEAD
-		//ply:SetNetVar("lastFake",ply.lastFake)
-		ply:SetMoveType(MOVETYPE_WALK)
-		--local hull = Vector(5,5,5)
-		--ply:SetHull(-Vector(hull,hull,0),Vector(hull,hull,72))
-		--ply:SetHullDuck(-Vector(hull,hull,0),Vector(hull,hull,36))
-		--ply:SetViewOffset(Vector(0,0,64))
-		--ply:SetViewOffsetDucked(Vector(0,0,34))
-	else
-		ply.lastFake = 0
-=======
 		//ply:SetNetVar("lastFake", ply.lastFake)
 		ply:SetMoveType(MOVETYPE_WALK)
 		local hull = Vector(5,5,5)
@@ -649,7 +638,6 @@ function hg.SetFreemove(ply, set)
 	else
 		ply.lastFake = 0
 		ply.lastFakeTime = 0
->>>>>>> d52f111c617d26586873c5579ed7f2da1efa0c8c
 		//ply:SetNetVar("lastFake",0)
 		//if ply:GetMoveType() != (ply:InVehicle() and MOVETYPE_NOCLIP or MOVETYPE_NONE) then
 			//ply:SetMoveType(ply:InVehicle() and MOVETYPE_NOCLIP or MOVETYPE_NONE)

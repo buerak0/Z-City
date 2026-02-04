@@ -216,7 +216,6 @@ local braindamage_phraselist = {
 	"Bhrhraihin.",
 }
 
-<<<<<<< HEAD
 local cold_phraselist = {
 	"It's getting very cold..",
 	"Too cold for me.",
@@ -262,8 +261,6 @@ local heatvomit_phraselist = {
 	"Fuuck.. Oughhh.. I dont feel-"
 }
 
-=======
->>>>>>> d52f111c617d26586873c5579ed7f2da1efa0c8c
 local hg_showthoughts = ConVarExists("hg_showthoughts") and GetConVar("hg_showthoughts") or CreateClientConVar("hg_showthoughts", "1", true, true, "Show the thoughts of your character", 0, 1)
 
 function string.Random(length)
@@ -299,10 +296,7 @@ function hg.likely_to_phrase(ply)
 	local brain = org.brain
 	local blood = org.blood
 	local fear = org.fear
-<<<<<<< HEAD
 	local temperature = org.temperature
-=======
->>>>>>> d52f111c617d26586873c5579ed7f2da1efa0c8c
 	local broken_dislocated = org.just_damaged_bone and ((org.just_damaged_bone - CurTime()) < -3)
 
 	return (broken_dislocated) and 5
@@ -312,11 +306,8 @@ function hg.likely_to_phrase(ply)
 		--or (fear > 0.5 and 0.7)
 		or (brain > 0.1 and brain * 5)
 		or (fear < -0.5 and 0.05)
-<<<<<<< HEAD
 		or (temperature < 31 and 1.5 or 0.5)
 		or (temperature > 40 and 3 or 1)
-=======
->>>>>>> d52f111c617d26586873c5579ed7f2da1efa0c8c
 		or -0.1
 end
 
@@ -344,10 +335,7 @@ local function get_status_message(ply)
 
 	local pain = org.pain
 	local brain = org.brain
-<<<<<<< HEAD
 	local temperature = org.temperature
-=======
->>>>>>> d52f111c617d26586873c5579ed7f2da1efa0c8c
 	local blood = org.blood
 	local hungry = org.hungry
 	local broken_dislocated = org.just_damaged_bone and ((org.just_damaged_bone + 3 - CurTime()) < -3)
@@ -400,15 +388,12 @@ local function get_status_message(ply)
 		--most_wanted_phraselist = ((IsAimedAt(ply) > 0.9) and is_aimed_at_phrases or (math.random(10) == 1 and fear_hurt_ironic or fear_phrases))
 	end
 
-<<<<<<< HEAD
 	if temperature < 35 then
 		most_wanted_phraselist = temperature > 31 and cold_phraselist or freezing_phraselist
 	elseif temperature > 38 then
 		most_wanted_phraselist = temperature < 40 and hot_phraselist or heatstroke_phraselist
 	end
 
-=======
->>>>>>> d52f111c617d26586873c5579ed7f2da1efa0c8c
 	if not most_wanted_phraselist and hungry and hungry > 25 and math.random(3) == 1 then
 		most_wanted_phraselist = hungry > 45 and very_hungry or hungry_a_bit
 	end
@@ -426,7 +411,6 @@ local function get_status_message(ply)
 	end
 end
 
-<<<<<<< HEAD
 local allowedlist_types = {
 	heatvomit = heatvomit_phraselist,
 }
@@ -456,8 +440,6 @@ function hg.get_phraselist(ply, type)
 	return str
 end
 
-=======
->>>>>>> d52f111c617d26586873c5579ed7f2da1efa0c8c
 function hg.get_status_message(ply)
 	local txt = get_status_message(ply)
 

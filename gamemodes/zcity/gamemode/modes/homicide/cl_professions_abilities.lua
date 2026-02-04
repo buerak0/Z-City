@@ -1,15 +1,9 @@
 local MODE = MODE
 local mode_type = mode_type --; Watafucko ahhh
 
-<<<<<<< HEAD
-MODE.FootStepsDrawDistanceSqr = 90
-MODE.FootStepsArrangementDistanceSqr = MODE.FootStepsDrawDistanceSqr + 100
-MODE.FootStepsDrawDistanceCrouchedSqr = 300
-=======
 MODE.FootStepsDrawDistanceSqr = 290
 MODE.FootStepsArrangementDistanceSqr = MODE.FootStepsDrawDistanceSqr + 100
 MODE.FootStepsDrawDistanceCrouchedSqr = 800
->>>>>>> d52f111c617d26586873c5579ed7f2da1efa0c8c
 MODE.FootStepsArrangementDistanceCrouchedSqr = MODE.FootStepsDrawDistanceCrouchedSqr + 100
 MODE.FootStepsCurDrawDistanceSqr = MODE.FootStepsDrawDistanceSqr
 MODE.FootStepsCurArrangementDistanceSqr = MODE.FootStepsArrangementDistanceSqr
@@ -119,11 +113,7 @@ hook.Add("PostDrawTranslucentRenderables", "HMCD_Professions_Abilities", functio
 		else
 			MODE.FootStepsCurDrawDistanceSqr = Lerp(frame_time * 3, MODE.FootStepsCurDrawDistanceSqr, MODE.FootStepsDrawDistanceSqr)
 		end
-<<<<<<< HEAD
-	
-=======
 		
->>>>>>> d52f111c617d26586873c5579ed7f2da1efa0c8c
 		cam.Start3D(ply_pos, ply_angs)
 			for footstep_key, footstep_info in ipairs(MODE.ArrangedFootSteps) do
 				local length = 20

@@ -83,15 +83,10 @@ SWEP.lerpaddcloseanim = 0
 SWEP.closeanimdis = 40
 SWEP.WepAngOffset = Angle(0,0,0)
 SWEP.weaponAngLerp = Angle(0,0,0)
-<<<<<<< HEAD
-local tickInterval = engine.TickInterval -- gde
-local hook_Run = hook.Run
-=======
 
 local tickInterval = engine.TickInterval -- gde
 local hook_Run = hook.Run
 
->>>>>>> d52f111c617d26586873c5579ed7f2da1efa0c8c
 function SWEP:ChangeGunPos(dtime)
 	local ply = self:GetOwner()
 	if not IsValid(ply) then return end
@@ -224,11 +219,7 @@ function SWEP:PosAngChanges(ply, desiredPos, desiredAng, bNoAdditional, closeani
 		local _, ot = WorldToLocal(vector_origin, ang, vector_origin, att_Ang)
 		ot:Normalize()
 	
-<<<<<<< HEAD
-		local use = hg.KeyDown(ply, IN_USE) or ply:InVehicle() or (ply:GetNetVar("lastFake",0) > CurTime()) or IsValid(ply.OldRagdoll)
-=======
 		local use = self:InUse()
->>>>>>> d52f111c617d26586873c5579ed7f2da1efa0c8c
 		local fourtyfive = 45 * (use and 1 or 0)
 		ot[2] = math.Clamp(ot[2], -fourtyfive, fourtyfive)
 		ot[1] = math.Clamp(ot[1], -fourtyfive, fourtyfive)

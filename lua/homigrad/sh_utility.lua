@@ -573,10 +573,7 @@ hg.ConVars = hg.ConVars or {}
 		local prev_on_ground,current_on_ground,speedPrevious,speed = false,false,0,0
 		local angle_hitground = Angle(0,0,0)
 		hook.Add("Think", "CP_detectland", function()
-<<<<<<< HEAD
-=======
 			if IsValid(lply.FakeRagdoll) then return end
->>>>>>> d52f111c617d26586873c5579ed7f2da1efa0c8c
 			prev_on_ground = current_on_ground
 			current_on_ground = LocalPlayer():OnGround()
 
@@ -881,8 +878,6 @@ local IsValid = IsValid
 	end
 --//
 --\\ DrawPlayerRagdoll
-<<<<<<< HEAD
-=======
 	local hg_ragdollcombat = ConVarExists("hg_ragdollcombat") and GetConVar("hg_ragdollcombat") or CreateConVar("hg_ragdollcombat", 0, FCVAR_REPLICATED, "ragdoll combat", 0, 1)
 	
 	function hg.RagdollCombatInUse(ply)
@@ -890,7 +885,6 @@ local IsValid = IsValid
 	end
 	
 	local hg_firstperson_ragdoll = ConVarExists("hg_firstperson_ragdoll") and GetConVar("hg_firstperson_ragdoll") or CreateConVar("hg_firstperson_ragdoll", 0, FCVAR_ARCHIVE, "first person ragdoll", 0, 1)
->>>>>>> d52f111c617d26586873c5579ed7f2da1efa0c8c
 	local hg_gopro = ConVarExists("hg_gopro") and GetConVar("hg_gopro") or CreateClientConVar("hg_gopro", "0", true, false, "gopro camera", 0, 1)
 
 	local vector_full = Vector(1, 1, 1)
@@ -952,11 +946,7 @@ local IsValid = IsValid
 		--if !current:IsEqualTol(wawanted, 0.01) then
 			--ent:ManipulateBoneScale(lkp, wawanted)
 			local mat = ent:GetBoneMatrix(lkp)
-<<<<<<< HEAD
-			if not hg_gopro:GetBool() then
-=======
 			if !hg_gopro:GetBool() and (ent == ply or (!hg_ragdollcombat:GetBool() or hg_firstperson_ragdoll:GetBool())) then
->>>>>>> d52f111c617d26586873c5579ed7f2da1efa0c8c
 				mat:SetScale(wawanted)
 			end
 			--angfuck[3] = -GetViewPunchAngles2()[2] - GetViewPunchAngles3()[2]
@@ -1537,11 +1527,7 @@ local IsValid = IsValid
 			return
 		end
 
-<<<<<<< HEAD
-		if IsValid(ply.FakeRagdoll) or IsValid(ply:GetNWEntity("FakeRagdollOld")) then
-=======
 		if !hg.RagdollCombatInUse(ply) and (IsValid(ply.FakeRagdoll) or IsValid(ply:GetNWEntity("FakeRagdollOld"))) then
->>>>>>> d52f111c617d26586873c5579ed7f2da1efa0c8c
 			if IsValid(ply.FakeRagdoll) then
 				cmd:SetForwardMove(0)
 				cmd:SetSideMove(0)
@@ -1997,11 +1983,8 @@ local IsValid = IsValid
 			end
 		end
 
-<<<<<<< HEAD
-=======
 		hook_Run("HG_PlayerFootstep_Notify", ply, pos, foot, sound, volume, rf)	--; Do not return anything from this _Notify hook
 		
->>>>>>> d52f111c617d26586873c5579ed7f2da1efa0c8c
 		local Hook = hook_Run("HG_PlayerFootstep", ply, pos, foot, sound, volume, rf)
 
 		if Hook then return Hook end
@@ -2639,13 +2622,9 @@ duplicator.Allow( "homigrad_base" )
 	end)
 --//
 
-<<<<<<< HEAD
+
 --\\ Shared maps with temperatures
 hg.TemperatureMaps = {
-=======
---\\ Shared coldmaps
-hg.ColdMaps = {
->>>>>>> d52f111c617d26586873c5579ed7f2da1efa0c8c
 	["gm_wintertown"] = true,
 	["cs_drugbust_winter"] = true,
 	["cs_office"] = true,
@@ -2659,12 +2638,8 @@ hg.ColdMaps = {
 	["mu_riverside_snow"] = true,
 	["gm_fork_north"] = true,
 	["gm_fork_north_day"] = true,
-<<<<<<< HEAD
 	["gm_ijm_boreas"] = true,
 	["gm_construct"] = true, -- test
-=======
-	["gm_ijm_boreas"] = true
->>>>>>> d52f111c617d26586873c5579ed7f2da1efa0c8c
 }
 --//
 
@@ -2740,10 +2715,6 @@ hg.ColdMaps = {
     game.AddParticles( "particles/gf2_firework_small_01.pcf" )
 --//
 --\\ Fun commands
-<<<<<<< HEAD
-	local hg_ragdollcombat = ConVarExists("hg_ragdollcombat") and GetConVar("hg_ragdollcombat") or CreateConVar("hg_ragdollcombat", 0, FCVAR_REPLICATED, "ragdoll combat", 0, 1)
-=======
->>>>>>> d52f111c617d26586873c5579ed7f2da1efa0c8c
 	local hg_thirdperson = ConVarExists("hg_thirdperson") and GetConVar("hg_thirdperson") or CreateConVar("hg_thirdperson", 0, FCVAR_REPLICATED, "thirdperson combat", 0, 1)
 --//
 --\\ Explosion Trace

@@ -50,10 +50,7 @@ module[2] = function(owner, org, timeValue)
 	heartbeat = heartbeat + math.Clamp(org.pain, 40, 80) - 40
 	heartbeat = heartbeat + 40 * math.min(org.adrenaline, 3)
 	heartbeat = heartbeat - 40 * math.min(org.analgesia / 2.5, 1)
-<<<<<<< HEAD
 	heartbeat = heartbeat + 100 * math.Clamp(math.Remap(org.temperature, 40, 42, 0, 1), 0, 1)
-=======
->>>>>>> d52f111c617d26586873c5579ed7f2da1efa0c8c
 	org.heartbeat = math.Approach(org.heartbeat, heartbeat, heartbeat > org.heartbeat and timeValue * 5 or timeValue * 2)
 	
 	if org.heartstop then
@@ -71,17 +68,10 @@ module[2] = function(owner, org, timeValue)
 	local adren = org.adrenaline
 
 	if org.pulse < 10 or org.brain >= 0.6 then org.heartstop = true end
-<<<<<<< HEAD
 	if org.temperature < 28 or org.temperature > 42 then org.heartstop = true end
 
 	-- temperature
 	if not org.tempchanging then
-=======
-	if org.temperature < 28 then org.heartstop = true end
-
-	-- temperature
-	if not org.freezing then
->>>>>>> d52f111c617d26586873c5579ed7f2da1efa0c8c
 		org.temperature = Lerp(0.1 * timeValue, org.temperature, math.min(math.max(37 * (org.pulse / 45), 35),37.7))
 	end
 	
