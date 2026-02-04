@@ -8,8 +8,7 @@ SWEP.Primary.Wait = 1
 SWEP.Primary.Next = 0
 SWEP.HoldType = "normal"
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/tfa_ins2/upgrades/phy_optic_eotech.mdl"
-SWEP.Model = "models/weapons/w_models/w_jyringe_jroj.mdl"
+SWEP.WorldModel = "models/bloocobalt/l4d/items/w_eq_adrenaline.mdl"
 if CLIENT then
 	SWEP.WepSelectIcon = Material("entities/zcity/fury13.png")
 	SWEP.IconOverride = "entities/zcity/fury13.png"
@@ -21,8 +20,10 @@ SWEP.AutoSwitchFrom = false
 SWEP.Slot = 5
 SWEP.SlotPos = 1
 SWEP.WorkWithFake = true
-SWEP.offsetVec = Vector(5, -1.5, -2.5)
-SWEP.offsetAng = Angle(90, 00, -90)
+SWEP.offsetVec = Vector(3, -2.5, -1)
+SWEP.offsetAng = Angle(-30, 20, -90)
+SWEP.ModelScale = 0.6
+SWEP.Color = Color(255, 170, 80)
 SWEP.modeNames = {
 	[1] = "fury-13"
 }

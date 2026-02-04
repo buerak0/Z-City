@@ -47,6 +47,10 @@ function SWEP:DrawWorldModel()
 end
 
 function SWEP:DrawWorldModel2(nodraw)
+	if self.Color then
+		render.SetColorModulation(self.Color.r/255,self.Color.g/255,self.Color.b/255)
+	end
+
 	local mdl = self.Model or self.WorldModel
 	modelshuy[mdl] = IsValid(modelshuy[mdl]) and modelshuy[mdl] or ClientsideModel(mdl)
 	modelshuy[mdl]:SetNoDraw(true)
@@ -55,7 +59,12 @@ function SWEP:DrawWorldModel2(nodraw)
 	owner = hg.GetCurrentCharacter(owner)
 	if not IsValid(WorldModel) then return end
 
-	WorldModel:SetModelScale(self.ModelScale or 1)
+	if self.ModelScale then
+		WorldModel:SetModelScale(self.ModelScale or 1)
+	end
+	if self.Color then
+		WorldModel:SetColor(self.Color or color_white)
+	end
 	
 	if IsValid(owner) then
 		local offsetVec = self.offsetVec
@@ -80,6 +89,10 @@ function SWEP:DrawWorldModel2(nodraw)
 	end
 	
 	if not nodraw then WorldModel:DrawModel() end
+
+	if self.Color then
+		render.SetColorModulation(1,1,1)
+	end
 end
 
 function SWEP:OnRemove()

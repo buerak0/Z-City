@@ -1292,17 +1292,18 @@ hook.Add("PlayerDeath","I_Feel_Death",function(ply)
 end)
 
 hook.Add("PostEntityTakeDamage", "GlassShards", function(ent, dmginfo)
-	if ent:GetClass() ~= "func_breakable_surf" then return end
-	if math.random(10) == 5 then
-		local glass = ents.Create("weapon_hg_glassshard")
-		local inf = dmginfo:GetInflictor()
-		glass:SetPos(IsValid(inf) and inf:GetPos() or dmginfo:GetAttacker():GetPos())
-		glass:SetAngles(AngleRand(-180, 180))
-		glass:Spawn()
-		glass.IsSpawned = true
-		glass.init = true
-		--Player(2):SetPos(IsValid(inf) and inf:GetPos() or dmginfo:GetAttacker():GetPos())
-		--print(ent, glass) -- bro im spawned and etc.
+	if IsValid(ent) and math.random(4) == 2 then
+		if ent:GetClass() == "func_breakable_surf" or (ent:GetClass() == "func_breakable" and ent:GetMaterialType() == MAT_GLASS) then
+			local glass = ents.Create("weapon_hg_glassshard")
+			local inf = dmginfo:GetInflictor()
+			glass:SetPos(IsValid(inf) and inf:GetPos() or dmginfo:GetAttacker():GetPos())
+			glass:SetAngles(AngleRand(-180, 180))
+			glass:Spawn()
+			glass.IsSpawned = true
+			glass.init = true
+			--Player(2):SetPos(IsValid(inf) and inf:GetPos() or dmginfo:GetAttacker():GetPos())
+			--print(ent, glass) -- bro im spawned and etc.
+		end
 	end
 end)
 

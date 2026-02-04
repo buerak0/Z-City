@@ -67,7 +67,7 @@ if SERVER then
 
 		local injected = math.min(FrameTime() * 10, self.modeValues[1])
 		org.analgesiaAdd = math.min(org.analgesiaAdd + injected, 4)
-		self.modeValues[1] = math.max(self.modeValues[1] - FrameTime() * 10, 0)
+		self.modeValues[1] = math.max(self.modeValues[1] - FrameTime() * 1, 0)
 
 		owner.injectedinto = owner.injectedinto or {}
 		owner.injectedinto[org.owner] = owner.injectedinto[org.owner] or 0

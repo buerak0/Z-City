@@ -882,7 +882,7 @@ end
 function SWEP:BehindAttack(ent)
     local owner = self:GetOwner()
 
-    return self:IsEntSoft(ent) and ent:IsPlayer() and (owner:GetAimVector():Dot(ent:GetAimVector()) > math.cos(math.rad(45)))
+    return self:IsEntSoft(ent) and ent:IsPlayer() and IsValid(owner) and (owner:GetAimVector():Dot(ent:GetAimVector()) > math.cos(math.rad(45)))
 end
 
 function SWEP:PunchPlayer(ent, attacktype, trnormal, dmg)
@@ -920,14 +920,17 @@ end
 
 function SWEP:BlockingLogic(ent, mul, attacktype, trace)
     local ent = hg.RagdollOwner(ent) or ent
+	local owner = self:GetOwner()
 
-    if ent:IsPlayer() and !table.HasValue(self.HitEnts, ent) then
+	if ent:IsPlayer() and ((istable(self.HitEnts) and !table.HasValue(self.HitEnts, ent)) or owner:IsNPC()) then
         local wep = ent:GetActiveWeapon()
-
-        local owner = self:GetOwner()
 
         local pos, aimvec = hg.eye(ent)
         local pos2, aimvec2 = hg.eye(owner)
+
+		if owner:IsNPC() then
+			pos, aimvec, aimvec2 = owner:EyePos(), owner:GetAimVector(), owner:GetAimVector()
+		end
 
         if not aimvec or not aimvec2 then return 1 end
 
@@ -944,7 +947,9 @@ function SWEP:BlockingLogic(ent, mul, attacktype, trace)
             ent.organism.stamina.subadd = ent.organism.stamina.subadd + mul * math.Clamp(selfdmg / dmg, 0.1, 1) * selfdmg * (perfectblock and 0 or 1)
 
             //viewpunch the attacker maybe?
-            self:PunchPlayer(owner, attacktype, -owner:GetAimVector(), selfdmg / 2)
+			if not owner:IsNPC() then
+            	self:PunchPlayer(owner, attacktype, -owner:GetAimVector(), selfdmg / 2)
+			end
             self:PunchPlayer(ent, attacktype, owner:GetAimVector(), selfdmg / 2)
             
             if perfectblock then
@@ -1650,57 +1655,64 @@ function SWEP:CreateFake(ragdoll)
 end
 
 function SWEP:NPCThink()
-    local ent = self:GetOwner()
+    local npc = self:GetOwner()
     self:SetWeaponHoldType("melee")
     
-    if ent:GetClass() == "npc_metropolice" then
+    if npc:GetClass() == "npc_metropolice" then
         self:SetWeaponHoldType("smg")
     end
     
-    --ent:Fire( "GagEnable" )
+    --npc:Fire( "GagEnable" )
     
-    if ent:GetClass() == "npc_citizen" then
-        --ent:Fire( "DisableWeaponPickup" )
+    if npc:GetClass() == "npc_citizen" then
+        --npc:Fire( "DisableWeaponPickup" )
     end
     
-    local enemy = ent:GetEnemy()
+    local enemy = npc:GetEnemy()
     if not enemy then return end
 
-    local dist = enemy:GetPos():Distance(ent:GetPos())
+    local dist = enemy:GetPos():Distance(npc:GetPos())
 
     if enemy and dist > 85 then
-        --ent:SetSchedule(SCHED_CHASE_ENEMY)
+        --npc:SetSchedule(SCHED_CHASE_ENEMY)
     end
 
     if dist < 85 and (self.LastNPCAttack or 0) < CurTime() then
+		local timerId = (self:EntIndex() .. "_NPCAttack")
+		if timer.Exists(timerId) then return end
+
         local dmg = math.random(self.DamagePrimary - 3, self.DamagePrimary + 3)
         
         local tr = {}
-        tr.start = ent:EyePos()
+        tr.start = npc:EyePos()
         tr.endpos = enemy.EyePos and enemy:EyePos() or enemy:GetPos()
-        tr.filter = ent
+        tr.filter = npc
 
         local trace = util.TraceLine(tr)
 		--  trace.Entity == ((enemy:IsPlayer() and IsValid(enemy.FakeRagdoll) and (enemy.organism and not enemy.organism.otrib)) and enemy.FakeRagdoll or enemy)
         local trEnt = IsValid(trace.Entity) and trace.Entity
 		if IsValid(trEnt) then
 			self.LastNPCAttack = CurTime() + (self.AnimTime1 or 1)
-			ent:EmitSound(self.AttackSwing, 70)
+			npc:EmitSound(self.AttackSwing, 70)
 
-            ent:SetSchedule(SCHED_MELEE_ATTACK1)
+            npc:SetSchedule(SCHED_MELEE_ATTACK1)
+			timer.Create(timerId, (self.AttackTime + 0.1) or 0.4, 1, function()
+				if IsValid(self) and IsValid(npc) and npc:Alive() and IsValid(trEnt) then
+					local mul = 1
+					mul = mul * (self:BehindAttack(trEnt) and 2 or 1)
+					mul = mul * self:BlockingLogic(trEnt, mul, false, trace)
+					trEnt:PrecacheGibs()
 
-			local timerId = self:EntIndex() .. "_NPCAttack"
-			timer.Create(timerId, self.AttackTime or 0.4, 1, function()
-				if IsValid(self) and IsValid(ent) and IsValid(trEnt) then
+					dmg = dmg * mul
 					local dmginfo = DamageInfo()
-					dmginfo:SetAttacker(ent)
+					dmginfo:SetAttacker(npc)
 					dmginfo:SetInflictor(self)
 					dmginfo:SetDamage(dmg)
 					dmginfo:SetDamageForce(trace.Normal * dmg * 1)
 					dmginfo:SetDamageType(self.DamageType)
 					dmginfo:SetDamagePosition(trace.HitPos)
 					trEnt:TakeDamageInfo(dmginfo)
-					ent:EmitSound(self.AttackHitFlesh, 60)
+					npc:EmitSound(self.AttackHitFlesh, 60)
 
 					if trEnt:IsPlayer() then
 						hg.AddForceRag(trEnt, trace.PhysicsBone or 0, trace.Normal * math.min(dmg, 25) * 400, 0.5)
