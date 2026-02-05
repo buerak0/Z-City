@@ -317,7 +317,7 @@ local stations = {
 }
 
 local choosera = 1
-
+local tempolerp = 0
 hook.Add("Post Post Processing", "ItHurts", function()
 	local spect = IsValid(lply:GetNWEntity("spect")) and lply:GetNWEntity("spect")
 	
@@ -417,12 +417,13 @@ hook.Add("Post Post Processing", "ItHurts", function()
 		render.DrawScreenQuad()
 	end
 
-	if (tempLerp < 34) then
-		local tempo = math.Clamp((5 - (tempLerp - 29)) * 0.5, 0, 5)
-
+	local tempo = math.Clamp((5 - (tempLerp - 29)) * 0.5 - 5 * (org.heartbeat < 1 and 1 or 0), 0, 5)
+	tempolerp = LerpFT(0.01, tempolerp, tempo)
+	
+	if (tempolerp > 0) then
 		render.UpdateScreenEffectTexture()
 
-		coldMat:SetFloat("$c0_y", tempo)
+		coldMat:SetFloat("$c0_y", tempolerp)
 		
 		render.SetMaterial(coldMat)
 		render.DrawScreenQuad()

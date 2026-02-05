@@ -75,7 +75,7 @@ if SERVER then
 		if time2 > CurTime() then return end
 		time2 = time2 + 1
 
-		for i,tbl in ipairs(hg.gasolinePath) do
+		for i, tbl in ipairs(hg.gasolinePath) do
 			local pos, ignited = tbl[1], tbl[2]
 			
 			if isnumber(ignited) and (ignited + 60) < CurTime() then tbl[2] = true continue end
@@ -83,7 +83,7 @@ if SERVER then
 			if isnumber(ignited) then
 				local something_ignited = false
 				
-				for i, tbl2 in pairs(hg.gasolinePath) do
+				for i, tbl2 in ipairs(hg.gasolinePath) do
 					if not tbl2[2] and (tbl[1] - tbl2[1]):LengthSqr() < 2048 then
 						tbl2[2] = CurTime()
 						tbl2[3] = tbl[3] or tbl2[3]
@@ -171,7 +171,7 @@ if SERVER then
 					if (drum.lastFireCreated or 0) < CurTime() then
 						drum.lastFireCreated = CurTime() + 0.2
 
-						table.insert(hg.gasolinePath,{tr.HitPos, false})
+						table.insert(hg.gasolinePath, {tr.HitPos, false})
 					end
 				elseif tr.Entity != Entity(0) then
 					tr.Entity.shouldburn = tr.Entity.shouldburn and tr.Entity.shouldburn + 1 or 1
@@ -251,8 +251,8 @@ else
 	end)
 		
 	hook.Add("PreDrawEffects","fireeffects",function()
-		for i, tbl in pairs(hg.gasolinePath) do
-			local pos,ignited = tbl[1],tbl[2]
+		for i, tbl in ipairs(hg.gasolinePath) do
+			local pos, ignited = tbl[1], tbl[2]
 			
 			local effparticles = hg.effparticles
 			
@@ -340,7 +340,7 @@ else
         end
 
 		for i,tbl in pairs(hg.gasolinePath) do
-			local pos,ignited = tbl[1],tbl[2]
+			local pos, ignited = tbl[1], tbl[2]
 			surface.SetDrawColor(255,255,255,255)
 			surface.DrawRect(pos:ToScreen().x,pos:ToScreen().y,10,10)
 		end

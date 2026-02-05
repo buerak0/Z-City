@@ -7,6 +7,10 @@ module[1] = function(org)
 	org.heartstop = false
 	org.pulse = 70 -- that's the blood pressure
 	org.heartbeat = 70
+
+	org.tempchanging = 0
+	org.heatbuff = 30 -- seconds of heat supply
+	org.needed_temp = 36.7
 end
 
 function hg.organism.should_gain_fear(org)
@@ -34,6 +38,7 @@ module[2] = function(owner, org, timeValue)
 	--local k = heart * o2 * (1 / math.Clamp((org.blood - 2000) / 3000,0.2,1)) * brain * (org.heartstop and 0.1 or 1) --* halfValue2(stamina[2], stamina.fatigueRange, stamina.fatigueK)
 	local k = heart * o2 * (math.Clamp((org.blood - 1000) / 4000,0,1)) * brain * (org.heartstop and 0.1 or 1)
 	pulse = pulse * k
+	pulse = pulse * (math.Clamp(math.Remap(org.temperature, 28, 36.7, 0.5, 1), 0.5, 1))
 	
 	org.pulse = math.Approach(org.pulse, pulse, heart == 0 and timeValue * 10 or timeValue * 5)
 
@@ -51,6 +56,8 @@ module[2] = function(owner, org, timeValue)
 	heartbeat = heartbeat + 40 * math.min(org.adrenaline, 3)
 	heartbeat = heartbeat - 40 * math.min(org.analgesia / 2.5, 1)
 	heartbeat = heartbeat + 100 * math.Clamp(math.Remap(org.temperature, 40, 42, 0, 1), 0, 1)
+	heartbeat = heartbeat - 160 * (1 - math.Clamp(math.Remap(org.temperature, 28, 36.7, 0, 1), 0, 1))
+
 	org.heartbeat = math.Approach(org.heartbeat, heartbeat, heartbeat > org.heartbeat and timeValue * 5 or timeValue * 2)
 	
 	if org.heartstop then
@@ -71,8 +78,13 @@ module[2] = function(owner, org, timeValue)
 	if org.temperature < 28 or org.temperature > 42 then org.heartstop = true end
 
 	-- temperature
-	if not org.tempchanging then
-		org.temperature = Lerp(0.1 * timeValue, org.temperature, math.min(math.max(37 * (org.pulse / 45), 35),37.7))
+	local needed_temp = math.min(math.max(37 * (org.pulse / 45), 35), 36.7)
+	local changeRate = timeValue / 60
+	changeRate = changeRate * (org.temperature < needed_temp and math.Clamp(org.heatbuff / 60, 1, 2) or 1)
+	if math.abs(org.tempchanging) < changeRate then
+		org.temperature = math.Approach(org.temperature, needed_temp, changeRate)
+	else
+		org.needed_temp = needed_temp
 	end
 	
 	if not org.heartstop then
@@ -100,8 +112,8 @@ module[2] = function(owner, org, timeValue)
 		org.heartstoptime = nil
 	end
 
-	if org.alive and org.heartstoptime and org.heartstoptime + 30 < CurTime() and (org.lastsoundtime or 0) < CurTime() and org.o2.regen > 0 then
-		org.owner:EmitSound("zcitysnd/real_sonar/"..(ThatPlyIsFemale(org.owner) and "female" or "male").."_wheeze"..math.random(5)..".mp3",50)
+	if org.alive and org.heartstoptime and org.heartstoptime + 30 < CurTime() and (org.lastsoundtime or 0) < CurTime() and org.o2.regen > 0 and org.otrub then
+		org.owner:EmitSound("zcitysnd/real_sonar/"..(ThatPlyIsFemale(org.owner) and "female" or "male").."_wheeze"..math.random(5)..".mp3", 50)
 		--org.owner:EmitSound("breathing/agonalbreathing_"..math.random(13)..".wav", 50)
 		
 		org.lastsoundtime = CurTime() + math.random(25,35)

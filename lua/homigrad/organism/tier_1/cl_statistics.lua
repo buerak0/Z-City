@@ -63,6 +63,8 @@ local list = {
 	"owner",
 	"superfighter",
 	"temperature",
+	"tempchanging",
+	"heatbuff",
 	"fear",
 	"assimilated",
 	"berserk",

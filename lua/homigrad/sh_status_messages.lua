@@ -219,31 +219,26 @@ local braindamage_phraselist = {
 local cold_phraselist = {
 	"It's getting very cold..",
 	"Too cold for me.",
-	"I'm sneezing, fucking hell, man.",
+	"I'm shivering, fucking hell, man.",
 	"Extremely chilly out here..",
-	"Need some heat, for sure.",
-	"I need a fire or something!",
-	"Any shelter, something..",
+	"Need something to heat up",
 	"I feel sick from that cold, fuck."
 }
+
 local freezing_phraselist = {
-	"I.. Do not feel my body..",
-	"Fuck- I ca-ant feel my le-egs!",
-	"MY LEGS!!",
+	"I.. Do not feel m-my b-body..",
+	"I cant.. f-feel my legs",
 	"I'm f-fuck-king fre-ezing..",
 	"I-I think-k my face is num-mb..",
-	"This-s sSUCKS-S! Co-oldd..",
+	"Cold-d..",
 	"I.. Cannot feel any-ythi-ing..",
-	"I fee-l dizz-yy..",
-	"FUCK- THIS-S COLD!",
 }
+
 local numb_phraselist = {
 	"It's not.. cold anymore..",
 	"Why.. does it feel warm..?",
-	"Everything hurts.. then nothing.",
-	"That.. feels weird..!",
-	"I think I'm okay.. I think-",
-	"That's... not right..!"
+	"I think I'm okay.. I think...",
+	"Finally some warmth...",
 }
 
 local hot_phraselist = {
@@ -251,8 +246,11 @@ local hot_phraselist = {
 	"This hot is killing me..",
 	"My clothing is covered in sweat, fuck.",
 	"I'm smelling like shit!",
-	"It's a bit too hot, fuck, man."
+	"It's a bit too hot, fuck, man.",
+	"I'm heating up real bad",
+	"Why is it so hot in here",
 }
+
 local heatstroke_phraselist = {
 	"I NEED WATER!!",
 	"Please, water..",
@@ -263,6 +261,7 @@ local heatstroke_phraselist = {
 	"My heart.. It's about to burst..",
 	"I feel my heart pounding, FUCK!!"
 }
+
 local heatvomit_phraselist = {
 	"That heat..- I'm gonna vomit-",
 	"Ugghhh... I'm about to puke-",
@@ -308,10 +307,10 @@ function hg.likely_to_phrase(ply)
 	local broken_dislocated = org.just_damaged_bone and ((org.just_damaged_bone - CurTime()) < -3)
 
 	return (broken_dislocated) and 5
-		or (pain > 75) and 5
 		or (pain > 65) and 5
-		or (temperature < 31 and 1.5 or 0.5)
-		or (temperature > 40 and 2 or 1)
+		or (temperature < 28 and 0.5)
+		or (temperature < 31 and 1)
+		or (temperature > 40 and 2)
 		or (blood < 3000 and 0.3)
 		--or (fear > 0.5 and 0.7)
 		or (brain > 0.1 and brain * 5)
