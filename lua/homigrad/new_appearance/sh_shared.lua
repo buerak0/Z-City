@@ -474,6 +474,18 @@ function plymeta:GetSubMaterialSlots()
     return slots
 end
 
-function plymeta:GetFacemapSlot()
+function plymeta:GetSubMaterialIdByName(strName)
+    local mats = self:GetMaterials()
 
+    local id = false
+
+    for i = 1, #mats do
+        if mats[i] == strName then id = i-1 break end
+    end
+
+    return id
 end
+
+-- function plymeta:GetFacemapSlot()
+
+-- end
