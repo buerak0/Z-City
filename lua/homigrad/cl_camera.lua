@@ -273,18 +273,6 @@ function SpecCam(ply, vec, ang, fov, znear, zfar)
 	local org = eye.Pos
 	local ang1 = eye.Ang + Angle(5, 2, 0)
 	local org1 = eye.Pos + eye.Ang:Up() * 6 + eye.Ang:Forward() * -1 + eye.Ang:Right() * 6.5
-	if ply:GetNWBool("fake") == true and IsValid(ply:GetNWEntity("DeathRagdoll")) then
-		local attach = ply:GetNWEntity("DeathRagdoll"):GetAttachment(1)
-		local view = {
-			origin = attach.Pos + attach.Ang:Up() * 4 + attach.Ang:Forward() * -5 + attach.Ang:Right() * 6.5,
-			angles = attach.Ang + Angle(-10, 5, 0),
-			fov = 88,
-			drawviewer = true,
-			znear = 0.1
-		}
-
-		return view
-	end
 
 	local view = {
 		origin = org1,

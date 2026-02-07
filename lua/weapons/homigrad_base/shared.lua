@@ -512,7 +512,7 @@ end
 function SWEP:PrimaryShootPost()
 end
 
-function SWEP:Draw(server,overide)
+function SWEP:Draw(server, overide)
 	if self.drawBullet == false then
 		if SERVER and server and not overide then self:RejectShell(self.ShellEject) end
 		if CLIENT and not server and not overide then self:RejectShell(self.ShellEject) end
