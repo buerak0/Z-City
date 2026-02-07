@@ -872,11 +872,7 @@ players : 1 humans, 0 bots (20 max)
 		local function AddTinnitus(time, needSound)
 			lply = LocalPlayer()
 			lply.tinnitus = CurTime() + time * 4
-			lply:SetDSP(32) -- 36
-			if needSound then -- not used anyway :3
-				//lply:EmitSound("earringing_end.wav")
-				//zcitysnd/real_sonar/tinnitus1.mp3
-			end
+			lply:SetDSP(32)
 		end
 
 		local plymeta = FindMetaTable("Player")

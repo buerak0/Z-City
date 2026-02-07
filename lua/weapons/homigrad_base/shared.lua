@@ -585,6 +585,13 @@ if SERVER then
 		net.WritePlayer(ply)
 		net.Send(ply)
 	end)
+
+	hg_shoot_tinnitus = ConVarExists("hg_shoot_tinnitus") and GetConVar("hg_shoot_tinnitus") or CreateConVar("hg_shoot_tinnitus","0", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "Enables shooting tinnitus")
+	SetGlobalBool("hg_shoot_tinnitus",hg_shoot_tinnitus:GetBool())
+
+	cvars.AddChangeCallback("hg_shoot_tinnitus", function(convar_name, value_old, value_new)
+		SetGlobalBool("hg_shoot_tinnitus",hg_shoot_tinnitus:GetBool())
+	end)
 else
 	net.Receive("resettinnitus", function(len, ply)
 		local ply = net.ReadPlayer() or ply
@@ -593,7 +600,7 @@ else
 
 	hook.Add("Player Think", "TinnitusPadaet", function(ply, ent)
 		if (ply.TinnitusFactor or 0) > 0 then
-			ply.TinnitusFactor = math.min(math.max((ply.TinnitusFactor or 0) - 0.5, 0),102)
+			ply.TinnitusFactor = math.min(math.max((ply.TinnitusFactor or 0) - 0.5, 0),300)
 		end
 	end)
 end
@@ -609,8 +616,10 @@ function SWEP:EmitShoot()
 	local ply = self:GetOwner()
 	ply = IsValid(ply) and ply or self
 
+	local hadEarProtection = IsValid(lply) and lply.armors and lply.armors["ears"] == "headphones1"
+
 	if CLIENT then
-		if IsValid(lply) and lply.armors and lply.armors["ears"] == "headphones1" then
+		if hadEarProtection then
 			vol = vol / 2
 		end
 	end
@@ -634,21 +643,28 @@ function SWEP:EmitShoot()
 		end
 	end
 
-	if not self.Supressor and !self.NoWINCHESTERFIRE then
+	if !self.Supressor and !self.NoWINCHESTERFIRE then
 		self:PlaySnd("rifle_win1892/win1892_fire_01.wav", nil, nil, vol * (1 - insideVal / 16), math.Clamp(1 / self.Primary.Force / (self.NumBullet or 1) * 100 * 50,90,150), 55555, true)
 
 		self:PlaySnd("zcitysnd/sound/weapons/firearms/hndg_colt1911/colt_1911_fire1.wav", nil, nil, vol * (insideVal / 16), 150, 51256, true)
 		self:PlaySnd("zcitysnd/sound/weapons/firearms/hndg_colt1911/colt_1911_fire1.wav", nil, nil, vol * (insideVal / 16), 80, 50256, true)
 
 		self:PlaySnd("weapons/shoot/shot1.wav", nil, nil, vol * 1, 150, 52256, true)
+
+		if !hadEarProtection and GetGlobalBool("hg_shoot_tinnitus", false) then
+			lply.TinnitusFactor = (lply.TinnitusFactor or 0) + ( (self.Primary.Force * (self.NumBullet or 1) ) / 3) + insideVal
+			if lply.TinnitusFactor > 32 then
+				lply:AddTinnitus(lply.TinnitusFactor / 100)
+			end
+		end
 	end
-	
+
 	if (self.Primary.SoundFP or self.Supressor and self.SupressedSoundFP) and (GetViewEntity() == ply or GetViewEntity():GetPos():Distance( self:GetPos() ) < 150) then
 		self:PlaySnd((self.Supressor and self.SupressedSoundFP) or self.Primary.SoundFP, nil, nil, vol, nil, 55533, not self.Supressor)
 	else
 		self:PlaySnd(self.Supressor and (self.SupressedSound or (self:IsPistolHoldType() and "homigrad/weapons/pistols/sil.wav" or "m4a1/m4a1_suppressed_fp.wav")) or self.Primary.Sound, nil, nil, vol, nil, 55533, not self.Supressor)
 	end
-	if not self.Supressor then
+	if !self.Supressor then
 		self:PlaySndDist(self.DistSound, nil, nil, nil, nil, 55511, not self.Supressor)
 	end
 end
