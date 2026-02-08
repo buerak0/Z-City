@@ -225,7 +225,7 @@ function hg.organism.AddWound(ent,tr,bone,dmgInfo,dmgPos,dmgBlood,inputHole, out
 			
 			if not bonePos then return end
 
-			dmgPos = (i == 1 and inputHole[1] or outputHole[1])
+			dmgPos = (i == 1 and inputHole[1] or outputHole[1]) or dmgPos
 
 			if i == 2 and not outputHole[1] then continue end
 			if i == 1 and not outputHole[1] then dmgBlood = dmgBlood * 2 end
@@ -491,6 +491,10 @@ hook.Add("EntityTakeDamage", "homigrad-damage", function(ent, dmgInfo)
 	org.isPly = IsValid(ply)
 	
 	if org.godmode then return true end
+
+	if ent == ply and IsValid(ply.FakeRagdoll) and dmgInfo:IsDamageType(DMG_BURN) then
+		return true
+	end
 
 	local time = CurTime()
 
@@ -829,15 +833,15 @@ hook.Add("EntityTakeDamage", "homigrad-damage", function(ent, dmgInfo)
 			local smallRand = math.Rand(0.0001,0.0002)
 			//org.lungsL[2] = math.min(org.lungsL[2] + bigRand,1)
 			//org.lungsR[2] = math.min(org.lungsR[2] + bigRand,1)
-			org.lungsL[1] = math.min(org.lungsL[1] + bigRand,1)
-			org.lungsR[1] = math.min(org.lungsR[1] + bigRand,1)
-			hg.organism.input_list.liver(org,nil,smallRand,dmgInfo)
-			hg.organism.input_list.stomach(org,nil,smallRand,dmgInfo)
-			hg.organism.input_list.intestines(org,nil,smallRand,dmgInfo)
+			org.lungsL[1] = math.min(org.lungsL[1] + bigRand, 1)
+			org.lungsR[1] = math.min(org.lungsR[1] + bigRand, 1)
+			hg.organism.input_list.liver(org, nil, smallRand, dmgInfo)
+			hg.organism.input_list.stomach(org, nil,smallRand, dmgInfo)
+			hg.organism.input_list.intestines(org, nil, smallRand, dmgInfo)
 			hg.AddHarmToAttacker(dmgInfo, bigRand, "Burns harm")
 			--org.liver = math.min(org.liver + math.Rand(0.0005,0.0008),1) 
 			--org.stomach = math.min(org.stomach + math.Rand(0.0005,0.0008),1) 
-			org.trachea = math.min(org.trachea + smallRand,1)
+			//org.trachea = math.min(org.trachea + smallRand, 1)
 		end
 	else
 		local sfd = org.fakePlayer and ent or ply
