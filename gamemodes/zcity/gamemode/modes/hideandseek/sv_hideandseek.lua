@@ -67,12 +67,12 @@ function MODE:Intermission()
 end
 
 function MODE:CheckAlivePlayers()
-	local swatPlayers = {}
+	local seekerPlayers = {}
 	local banditPlayers = {}
 
 	for _, ply in ipairs(team.GetPlayers(0)) do
 		if ply:Alive() and not ply:GetNetVar("handcuffed", false) then
-			table.insert(swatPlayers, ply)
+			table.insert(seekerPlayers, ply)
 		end
 	end
 
@@ -82,7 +82,7 @@ function MODE:CheckAlivePlayers()
 		end
 	end
 
-	return {swatPlayers, banditPlayers}
+	return {seekerPlayers, banditPlayers}
 end
 
 
@@ -153,21 +153,21 @@ local tblarmors = {
 }
 
 function MODE:CanLaunch()
-	local points = zb.GetMapPoints( "HMCD_CRI_CT" ) -- More natural spawns
-	local points2 = zb.GetMapPoints( "HMCD_CRI_T" )
+	local points = zb.GetMapPoints( "HMCD_CRI_CT" ) 
+	local points2 = zb.GetMapPoints( "HMCD_CRI_T" ) -- We should swap this out for something better
 	local plramount = zb:CheckPlaying()
     return (#points > 3) and (#points2 > 0) and (#plramount > 5)
 end
 
 function MODE:GiveEquipment()
 	timer.Simple(0.5,function()
-		local swatPlayers = {} 
+		local seekerPlayers = {} 
 
 		for i, ply in player.Iterator() do
 			if ply:Team() == TEAM_SPECTATOR then continue end
 
 			if ply:Team() == 0 then
-				timer.Create("SWATSpawn" .. ply:EntIndex(), 90, 1, function()
+				timer.Create("SeekerSpawn" .. ply:EntIndex(), 90, 1, function()
 					if !IsValid(ply) or ply:Team() == TEAM_SPECTATOR then return end
 					ply:Spawn()
 					ply:SetSuppressPickupNotices(true)
@@ -175,7 +175,7 @@ function MODE:GiveEquipment()
 
 					ply:SetupTeam(ply:Team())
 
-					ply:SetPlayerClass("swat")
+					ply:SetPlayerClass("seeker")
 
 					local inv = ply:GetNetVar("Inventory")
 					inv["Weapons"]["hg_sling"] = true
@@ -183,9 +183,9 @@ function MODE:GiveEquipment()
 
 					hg.AddArmor(ply, tblarmors[ply:Team()][math.random(#tblarmors[ply:Team()])]) 
 
-					zb.GiveRole(ply, "SWAT", Color(0,0,190))
+					zb.GiveRole(ply, "Seeker", Color(0,0,190))
 
-					table.insert(swatPlayers, ply) 
+					table.insert(seekerPlayers, ply) 
 
 					local wep = tblweps[ply:Team()][math.random(#tblweps[ply:Team()])]
 					local gun = ply:Give(wep[1])
@@ -242,9 +242,9 @@ function MODE:GiveEquipment()
 			ply:SetSuppressPickupNotices(false)
 		end
 
-		timer.Create("SWATSpawn",31,1,function()
-			if #swatPlayers > 0 then
-				local ramPlayer = swatPlayers[math.random(#swatPlayers)]
+		timer.Create("SeekerSpawn",31,1,function()
+			if #seekerPlayers > 0 then
+				local ramPlayer = seekerPlayers[math.random(#seekerPlayers)]
 				if !IsValid(ramPlayer) or ramPlayer:Team() == TEAM_SPECTATOR then return end
 				ramPlayer:Give("weapon_ram")
 			end
@@ -265,12 +265,12 @@ end
 util.AddNetworkString("hideandseek_roundend")
 function MODE:EndRound()
 	for k,ply in player.Iterator() do
-		if timer.Exists("SWATSpawn"..ply:EntIndex()) then
-			timer.Remove("SWATSpawn"..ply:EntIndex())
+		if timer.Exists("SeekerSpawn"..ply:EntIndex()) then
+			timer.Remove("SeekerSpawn"..ply:EntIndex())
 		end
 	end
-	if timer.Exists("SWATSpawn") then
-		timer.Remove("SWATSpawn")
+	if timer.Exists("SeekerSpawn") then
+		timer.Remove("SeekerSpawn")
 	end
 
 	local endround, winner = zb:CheckWinner(self:CheckAlivePlayers())

@@ -24,7 +24,7 @@ local teams = {
 		color2 = Color(68, 10, 255)
 	},
 	[1] = {
-		objective = "Find a hiding spot! Someone's out to get you",
+		objective = "Find a hiding spot! Your life depends on it!",
 		name = "Hider",
 		color1 = Color(228, 49, 49),
 		color2 = Color(228, 49, 49)
