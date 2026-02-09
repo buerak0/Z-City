@@ -137,6 +137,6 @@ SWEP.ItemsBones = {
 SWEP.CoolDown = 0
 SWEP.SpoonSounds = {
 	[1] = {"snd_jack_spoonfling.ogg", 65},
-	[2] = {"m9/m9_fp.wav", 80}
+	[2] = {"m9/m9_fp.wav", 70, 200}
 }
 --self:EmitSound("snds_jack_gmod/flamethrower_ignite_try.wav",65)

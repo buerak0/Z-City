@@ -42,13 +42,26 @@ SWEP.WorkWithFake = true
 SWEP.offsetVec = Vector(6, 5.5, -41)
 SWEP.offsetAng = Angle(180, 160, 180)
 
-SWEP.Frequency = 1
+SWEP.Frequency = 88.6
 SWEP.Frequencies = {
-    "88.6 MHz",
-    "92.3 MHz",
-    "97.5 MHz",
-    "101.8 MHz",
-    "107.8 MHz"
+	88.6,
+    92.3,
+    97.5,
+    101.8,
+    107.8
+}
+
+
+local ST_TYPE_LOCALFILE = 0
+local ST_TYPE_URL = 1
+
+SWEP.FMStations = {
+	[97.5] = {ST_TYPE_LOCALFILE, function() return "radiorandom/radio" .. math.random(1,10) .. ".wav", 0 end},
+
+	--[98.2] = {ST_TYPE_LOCALFILE, function()
+	--	local track = "zc_dyna_music/medge/a".. math.random(1,15) ..".mp3"
+	--	return track, SoundDuration(track)
+	--end},
 }
 
 function SWEP:BippSound(ent, pitch)
@@ -58,24 +71,31 @@ end
 if(SERVER)then
 
     function SWEP:CanListen(output, input, isChat)
+		if !self.isOn then
+			return
+		end
 		if(not IsValid(output) or not IsValid(input))then 
-			return 
+			return
 		end
 
         if(not output:Alive() or output.organism.otrub or not input:Alive() or input.organism.otrub)then 
-			return false 
+			return false
 		end
 
         if(not input:HasWeapon("weapon_walkie_talkie"))then 
-			return 
+			return
 		end
 
         if(output:GetActiveWeapon() ~= self)then 
-			return 
+			return
+		end
+
+		if self.FMStations[self.Frequency] then
+			return
 		end
 
         if(output:GetWeapon("weapon_walkie_talkie").Frequency == input:GetWeapon("weapon_walkie_talkie").Frequency or output:Team() == 1002)then 
-			return true 
+			return true
 		end
     end
 
@@ -83,7 +103,7 @@ if(SERVER)then
         local wep = output:GetWeapon("weapon_walkie_talkie")
 
 		if(not IsValid(wep))then 
-			return 
+			return
 		end
 
         if(wep:CanListen(output, input, isChat))then
@@ -148,13 +168,25 @@ if(SERVER)then
 		end
     end)
 
-    function SWEP:OnRemove() 
-		
+	function SWEP:OnRemove() end
+
+	function SWEP:Deploy()
+		self:SetHudFrequency(self.Frequency)
+		self.isOn = self.isOn or false
+		self:SetIsOn(self.isOn)
 	end
 
 end
 
 function SWEP:DrawWorldModel()
+	if !self:GetOwner():IsPlayer() then
+		self:DrawModel()
+	end
+end
+
+function SWEP:SetupDataTables()
+	self:NetworkVar( "Float", 0, "HudFrequency" )
+	self:NetworkVar( "Bool", 0, "IsOn" )
 end
 
 function SWEP:DrawWorldModel2()
@@ -200,40 +232,116 @@ end
 
 function SWEP:Think()
 	self:SetHold(self.HoldType)
-end
 
-function SWEP:PrimaryAttack()
-	if(SERVER)then
-        self.Frequency = ((self.Frequency <= #self.Frequencies - 1) and self.Frequency + 1 or 1)
-        self:GetOwner():ChatPrint(self.Frequencies[self.Frequency])
+	if CLIENT then
+		local FMStations = self.FMStations[ math.Round(self:GetHudFrequency(),1) ]
+		if FMStations and self:GetIsOn() then
+			local Type = FMStations[1]
+			local Output = FMStations[2]
+			self.FM_EventCD = self.FM_EventCD or CurTime() + math.random(125,165)
+			if self.FM_EventCD < CurTime() then
+				self:BippSound(self:GetOwner())
+				self.FM_EventCD = CurTime() + math.random(125,165)
+				local play, timeadd = Output()
+				timer.Simple(0.5,function()
+					local ent = IsValid(self.model) and self.model or self
+					ent:EmitSound(play, 55, 100, 1, CHAN_AUTO, nil, 56)
+					self.FM_EventCD = self.FM_EventCD + timeadd
+				end)
+			end
+		end
 	end
 end
 
-if(CLIENT)then
-	function SWEP:DrawHUD()
-		if(GetViewEntity() ~= LocalPlayer())then 
-			return 
-		end
+if CLIENT then
+	function SWEP:MenuAddAdjuster(strName, tbl, howmuch)
+		tbl[#tbl + 1] = {function()
+			local tbl1 = {}
+			tbl1[#tbl1 + 1] = {function() RunConsoleCommand("hg_walkietalkie_adjust", howmuch) return -1 end,"Increase"}
+			tbl1[#tbl1 + 1] = {function() RunConsoleCommand("hg_walkietalkie_adjust", -howmuch) return -1 end,"Decrease"}
+			hg.CreateRadialMenu(tbl1)
+			return -1
+		end, strName}
+	end
+end
 
-		if(LocalPlayer():InVehicle())then 
-			return 
+if SERVER then
+	concommand.Add("hg_walkietalkie_adjust", function(ply, cmd, args)
+		if SERVER then
+			if not args[1] then return end
+			local ActiveWep = ply:GetActiveWeapon()
+			local walkietalkie = IsValid(ActiveWep) and ActiveWep:GetClass() == "weapon_walkie_talkie" and ActiveWep or false
+			if not walkietalkie then return end
+			walkietalkie:AdjustFrequency( tonumber( args[1] ) )
 		end
+	end)
+end
+
+function SWEP:PrimaryAttack()
+	if SERVER then return end
+	local tbl = {}
+	tbl[#tbl + 1] = {function()
+		local tbl1 = {}
+		for i = 1, #self.Frequencies do
+			local station = math.Round(self.Frequencies[i], 1)
+			tbl1[#tbl1 + 1] = { function() RunConsoleCommand("hg_walkietalkie_adjust", station - self:GetHudFrequency() ) end, "Station " .. station .. "MHz" }
+			hg.CreateRadialMenu(tbl1)
+		end
+		return -1
+	end, "Public stations"}
+	self:MenuAddAdjuster("Change 010.0 MHz", tbl, 010.0)
+	self:MenuAddAdjuster("Change 001.0 MHz", tbl, 001.0)
+	self:MenuAddAdjuster("Change 000.1 MHz", tbl, 000.1)
+
+	tbl[#tbl + 1] = {function()
+		RunConsoleCommand("+reload")
+		timer.Simple(0,function() RunConsoleCommand("-reload") end)
+	end, "On / Off"}
+	hg.CreateRadialMenu(tbl)
+end
+
+function SWEP:AdjustFrequency(numAdjust)
+	self.Frequency = math.Round(math.Clamp(self.Frequency + numAdjust, 87.5, 108),1)
+	self:SetHudFrequency(self.Frequency)
+	self:GetOwner():EmitSound("radiotune.mp3",45,math.random(95,105))
+	return self.Frequency
+end
+
+if CLIENT then
+	local walkietalkie_clr = Color(230,230,230)
+	local bg_clr = Color(0,0,0,220)
+	function SWEP:DrawHUD()
+		local Frequency = math.Round(self:GetHudFrequency(),1) .. " MHz"
+		local IsOn = self:GetIsOn() and "On" or "Off"
+		local width, height = ScreenScale(65), ScreenScaleH(28)
+		draw.RoundedBox(0, (ScrW() / 2) - width / 2, (ScrH() * 0.912) - height / 2, width, height, bg_clr)
+
+		draw.SimpleText(Frequency, "HomigradFontMedium",ScrW() / 2, ScrH() * 0.9, walkietalkie_clr, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.SimpleText("Walkie-Talkie " .. IsOn, "HomigradFontMedium",ScrW() / 2, ScrH() * 0.92, walkietalkie_clr, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	end
 end
 
 function SWEP:Initialize()
 	self:SetHold(self.HoldType)
-end
-
-function SWEP:SecondaryAttack()
-	if(SERVER)then
-        self.Frequency = ((self.Frequency > 1) and self.Frequency - 1 or #self.Frequencies)
-        self:GetOwner():ChatPrint(self.Frequencies[self.Frequency])
+	if SERVER then
+		self.isOn = false
 	end
 end
 
+function SWEP:SecondaryAttack()
+end
+
 function SWEP:Reload()
-	
+	local owner = self:GetOwner()
+	if SERVER and (!self.turnOnCD or self.turnOnCD < CurTime()) then
+		self.turnOnCD = CurTime() + 0.5
+		self.isOn = !self.isOn
+		self:SetIsOn(self.isOn)
+		self:BippSound(owner)
+
+		--owner:EmitSound("")
+		owner:zChatPrint("Walkie-Talkie is "..(self.isOn and "on" or "off"))
+	end
 end
 
 if(SERVER)then

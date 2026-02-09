@@ -274,6 +274,12 @@ else
 		return self:GetNetVar("bIsTyping")
 	end
 
+	function META:zChatPrint(...)
+		net.Start("zChatGlobalMessage")
+			net.WriteTable({...})
+		net.Send(self)
+	end
+
 	function zChatPrint(...)
 		net.Start("zChatGlobalMessage")
 			net.WriteTable({...})

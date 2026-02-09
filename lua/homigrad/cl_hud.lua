@@ -204,7 +204,7 @@ local taitorCol = Color(155,0,0)
 local menuPanel
 
 local colBack = Color(0,0,0)
-local function CreateRadialMenu(options_arg)
+local function CreateRadialMenu(options_arg, bAutoClose)
 	local sizeX, sizeY = ScrW(), ScrH()
 	hg.radialOptions = {}
 	local paining = lply.organism and lply.organism.pain and (lply.organism.pain > 100 or lply.organism.brain > 0.2) or false
@@ -234,6 +234,7 @@ local function CreateRadialMenu(options_arg)
 	menuPanel:SetKeyBoardInputEnabled(false)
 	menuPanel:SetAlpha(0)
 	menuPanel:AlphaTo(255,0.2)
+	menuPanel.bAutoClose = bAutoClose
 	if !options_arg then input.SetCursorPos(sizeX / 2, sizeY / 2) end
 
 	function menuPanel:Close()
@@ -374,7 +375,7 @@ local function PressRadialMenu(mouseClick)
 		if isfunction(func) then needed_mouseclick = func(mouseClick, current_option_select) end
 	end
 
-	if needed_mouseclick != -1 and IsValid(menuPanel) and mouseClick != (needed_mouseclick or 2) then
+	if needed_mouseclick != -1 and IsValid(menuPanel) and mouseClick != (needed_mouseclick or 2) and not menuPanel.bAutoClose then
 		menuPanel:Close()
 	end
 end
