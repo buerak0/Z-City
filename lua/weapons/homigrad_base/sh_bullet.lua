@@ -43,7 +43,7 @@ local timer, util, math, IsValid, WorldToLocal, Vector, sound, EffectData, game 
 
 local function callbackBullet(self, tr, dmg, force, bullet)
 	if CLIENT then return end
-
+	if not bullet then return end
 	bullet.limit_ricochet = bullet.limit_ricochet or 0
 	bullet.penetrated = bullet.penetrated or 0
 	if bullet.penetrated > 6 then return end
@@ -318,6 +318,7 @@ bulletHit = function(ply, tr, dmgInfo, bullet, Weapon)
 	end
 
 	timer.Simple(0,function()
+		if not bullet then return end
 		callbackBullet(Weapon or inflictor, tr, dmg, force, bullet)
 	end)
 end
