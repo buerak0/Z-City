@@ -142,6 +142,12 @@ SWEP.AnimList = {
 		self.IsLowThrow = true
 		self.ReadyToThrow = true
 	end,0.8},
+	["revers_pullbackhigh"] = {"pullbackhigh", 2, false, true, function(self) 
+		self:SetShowPin(true)
+	end,0.9},
+	["revers_pullbacklow"] = {"pullbacklow", 2, false, true, function(self) 
+		self:SetShowPin(true)
+	end,0.9},
 	["idle"] = {"draw", 1, false, false, function(self)
 	end}
 }
@@ -177,7 +183,15 @@ function SWEP:Holster( wep )
 		end
 
 		if self:GetNWBool("PlacedTrap", false) then
-			self:Remove()
+			self.count = self.count - 1
+			self.Trap = nil
+			self:ResetTrap()
+			if self.count < 1 then
+				if IsValid(self:GetOwner()) and self:GetOwner():IsPlayer() then
+					self:GetOwner():SelectWeapon("weapon_hands_sh")
+				end
+				self:Remove()
+			end
 		end
 
 		return true
@@ -357,6 +371,10 @@ function SWEP:SecondaryAttack()
 	self.CoolDown = CurTime() + 2
 	self:PlayAnim("pullbacklow")
 	self.Thrower = self:GetOwner()
+
+	self.TrappingRN = false
+	self.ReadyToTrap = false
+	self:SetNWBool("PlacedTrap", false)
 end
 
 function SWEP:InitAdd()
@@ -413,6 +431,11 @@ function SWEP:ThinkAdd()
 	self:SetHold(self.HoldType)
 	self.lastOwner = self:GetOwner()
 	if not SERVER then return end
+	if IsValid(self.Trap) then return end
+	--print(self.ReadyToTrap)
+	if self.ReadyToTrap then
+		self:PlaceTrap()
+	end
 
 	if not self.timeToBoom then
 		local ent = scripted_ents.GetStored(self.ENT)--scripted_ents.Get("ent_"..string.sub(self:GetClass(),8))
@@ -448,10 +471,6 @@ function SWEP:ThinkAdd()
 		self:SetShowGrenade(false)
 		self:Throw(0, self.SpoonTime or CurTime(),nil,Vector(0,0,0),Angle(0,0,0))
 		self:Remove()
-	end
-
-	if self.ReadyToTrap then
-		self:PlaceTrap()
 	end
 end
 
@@ -528,17 +547,38 @@ function SWEP:PrimaryAttack()
 	self.CoolDown = CurTime() + 2
 	self:PlayAnim("pullbackhigh")
 	self.Thrower = self:GetOwner()
+
+	self.TrappingRN = false
+	self.ReadyToTrap = false
+	self:SetNWBool("PlacedTrap", false)
 end
 
 function SWEP:OwnerChanged()
 	if SERVER and self:GetNWBool("PlacedTrap", false) then
-		self:Remove()
+		self.count = self.count - 1
+		self.Trap = nil
+		self:ResetTrap()
+		if self.count < 1 then
+			if IsValid(self:GetOwner()) and self:GetOwner():IsPlayer() then
+				self:GetOwner():SelectWeapon("weapon_hands_sh")
+			end
+			self:Remove()
+		end
 	end
 end
 
 --// Booby trap stuff
 SWEP.lpos = Vector(2,0,0)
 SWEP.lang = Angle(0,0,0)
+
+function SWEP:ResetTrap()
+	self:PlayAnim("deploy")
+	self.ReadyToThrow = false
+	self.TrappingRN = false
+	self.ReadyToTrap = false
+	self:SetNWBool("PlacedTrap", false)
+end
+
 function SWEP:PlaceTrap()
 	if self.NoTrap then return end
 
@@ -553,9 +593,13 @@ function SWEP:PlaceTrap()
 		entownr = hg.GetCurrentCharacter(ply)
 	end
 	
-	if ply:IsSprinting() then return end
+	if ply:IsSprinting() then
+		self:ResetTrap()
+	return end
 
-	if not hg.eyeTrace(ply).Hit then return end
+	if not hg.eyeTrace(ply).Hit then
+		self:ResetTrap()
+	return end
 
 	if not self.startedattack and entownr == ply and not self:GetNWBool("PlacedTrap", false) then
 		local tr = hg.eyeTrace(ply)
@@ -625,10 +669,10 @@ function SWEP:PlaceTrap()
 				phys:SetMass(1)
 			end
 
-			ent2.Trap = self
+			ent2.Trap = self.Trap
 			ent2:SetNoDraw(true)
 			ent2:AddCallback("PhysicsCollide",function()
-				if IsValid(ent2.Trap) then
+				if IsValid(ent2.Trap) and ent2.Trap.Arm then
 					ent2.Trap:Arm(CurTime() - ent2.Trap.timeToBoom + 1, vector_origin)
 				end
 			end)
@@ -645,16 +689,43 @@ function SWEP:PlaceTrap()
 			self.Trap.ent2 = ent2
 			self.Trap.cons = cons
 
-			ply:SelectWeapon("weapon_hands_sh")
-			self:Remove()
+			--ply:SelectWeapon("weapon_hands_sh")
+
+			self.count = self.count - 1
+			self.Trap = nil
+			self:ResetTrap()
+			self:PlayAnim("deploy")
+			if self.count < 1 then
+				if IsValid(self:GetOwner()) and self:GetOwner():IsPlayer() then
+					self:GetOwner():SelectWeapon("weapon_hands_sh")
+				end
+				self:Remove()
+			end
 		end
+	else
+		self:PlayAnim("deploy")
 	end
 
+	--self:PlayAnim("deploy")
 	self.TrappingRN = false
 	self.ReadyToTrap = false
 end
 
+function SWEP:ResetThrow()
+	if self.SpoonTime then return end
+	self.ReadyToThrow = false
+	self:PlayAnim(self.IsLowThrow and "revers_pullbacklow" or "revers_pullbackhigh")
+	self.IsLowThrow = false
+end
+
 function SWEP:Reload()
+	if CLIENT then return end
+	if (self.ReloadCD and self.ReloadCD > CurTime()) then return end
+	if self.ReadyToThrow then
+		self:ResetThrow()
+		self.ReloadCD = CurTime() + 1
+		return
+	end
 	if self.NoTrap or (self.TrappingRN or false) then return end
 
 	local ply = self:GetOwner()
@@ -664,6 +735,7 @@ function SWEP:Reload()
 	if not hg.eyeTrace(ply).Hit then return end
 
 	if self:GetNWBool("PlacedTrap", false) then
+		self.ReloadCD = CurTime() + 1
 		self:PlaceTrap()
 	else
 		self.TrappingRN = true

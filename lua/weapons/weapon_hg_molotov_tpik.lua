@@ -49,6 +49,7 @@ SWEP.Slot = 4
 SWEP.SlotPos = 4
 
 SWEP.ENT = "ent_hg_molotov"
+SWEP.NoSpoon = true
 
 if CLIENT then
 	function SWEP:OnRemove()
