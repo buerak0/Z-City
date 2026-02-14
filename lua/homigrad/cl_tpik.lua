@@ -855,6 +855,10 @@ local function solve(segments, iter, turn)
         final = backward(final, segments)
         final = forward(final, segments)
     end
+    
+    if segments[1].Pos:DistToSqr(segments[#segments].Pos) < 15 * 15 then
+        final = backward(final, segments)
+    end
 
     return final
 end
@@ -1000,10 +1004,14 @@ function hg.DoTPIK(ply, ent)
             filter = {ent, ply},
             mask = MASK_SOLID_BRUSHONLY,
         })
-
-        if tr.Hit then
-            local dist = ply.segmentsr[2].Pos:Distance(ply.segmentsr[1].Pos)
-            local new = tr.HitNormal * dist * (1 - tr.Fraction) * (math.sin(math.acos(tr.HitNormal:Dot(tr.Normal)))) + ply.segmentsr[2].Pos
+        
+        ply.lerpedsegmenthit = LerpFT(0.1, ply.lerpedsegmenthit or 0, (1 - tr.Fraction))
+        ply.oldhitnormal = LerpAngleFT(0.1, ply.oldhitnormal or tr.HitNormal:Angle(), tr.Hit and tr.HitNormal:Angle() or ply.oldhitnormal or Angle())
+        
+        if ply.lerpedsegmenthit > 0.01 and ply.oldhitnormal then
+            local hitnormal = ply.oldhitnormal:Forward()
+            local dist = 20--ply.segmentsl[2].Pos:Distance(ply.segmentsl[1].Pos)
+            local new = hitnormal * dist * ply.lerpedsegmenthit * (math.sin(math.acos(hitnormal:Dot(tr.Normal)))) + ply.segmentsr[2].Pos
 
             ply.segmentsr[2].Pos = new
         end
@@ -1093,7 +1101,7 @@ function hg.DoTPIK(ply, ent)
         local q = Quaternion()--:SetAngle(eyeang)
         q = q * Quaternion():SetAngleAxis(angrr.y, Vector(0, 0, 1))
         q = q * Quaternion():SetAngleAxis(angrr.p, Vector(0, 1, 0))
-        q = q * Quaternion():SetAngleAxis(-60 + angrr.p + eyeang.r - angrr.r, Vector(1, 0, 0))
+        q = q * Quaternion():SetAngleAxis(-120 + angrr.p + eyeang.r - angrr.r, Vector(1, 0, 0))
         --q:SetAngleAxis(-angle2 + 180, Vector(0, 1, 0))
         --q:SetAngleAxis(180, Vector(1, 0, 0))
         local ang = q:Angle()
@@ -1145,9 +1153,13 @@ function hg.DoTPIK(ply, ent)
             mask = MASK_SOLID_BRUSHONLY,
         })
 
-        if tr.Hit then
-            local dist = ply.segmentsl[2].Pos:Distance(ply.segmentsl[1].Pos)
-            local new = tr.HitNormal * dist * (1 - tr.Fraction) * (math.sin(math.acos(tr.HitNormal:Dot(tr.Normal)))) + ply.segmentsl[2].Pos
+        ply.lerpedsegmenthit2 = LerpFT(0.1, ply.lerpedsegmenthit2 or 0, (1 - tr.Fraction))
+        
+        ply.oldhitnormal2 = LerpAngleFT(0.1, ply.oldhitnormal2 or tr.HitNormal:Angle(), tr.Hit and tr.HitNormal:Angle() or ply.oldhitnormal2 or Angle())
+        if ply.lerpedsegmenthit2 > 0.01 and ply.oldhitnormal2 then
+            local hitnormal = ply.oldhitnormal2:Forward()
+            local dist = 20--ply.segmentsl[2].Pos:Distance(ply.segmentsl[1].Pos)
+            local new = hitnormal * dist * ply.lerpedsegmenthit2 * (math.sin(math.acos(hitnormal:Dot(tr.Normal)))) + ply.segmentsl[2].Pos
 
             ply.segmentsl[2].Pos = new
         end
@@ -1161,7 +1173,7 @@ function hg.DoTPIK(ply, ent)
         local hand = ply_l_hand_matrix:GetTranslation()
         local add = (hand - ply.segmentsl[1].Pos):GetNormalized() * 5 + eyeang:Right() * -5 + eyeang:Forward() * ((ply.lerp_hand or 0) - 0.5) * 10
 
-        if ishgweapon(self) and !ply:InVehicle() then
+        --[[if ishgweapon(self) and !ply:InVehicle() then
             local tr = util.TraceLine({
                     start = ply.segmentsl[1].Pos,
                     endpos = hand + add,
@@ -1179,7 +1191,7 @@ function hg.DoTPIK(ply, ent)
                 ang:RotateAroundAxis(ang:Right(), 40)
                 ply_l_hand_matrix:SetAngles(ang)
             end
-        end
+        end--]]
 
         if ply.organism and ply.organism.larm and ply.organism.larm > 0.99 and ishgweapon(self) and !self.reload and ishgweapon(self) then
             ply.segmentsl[3] = ply.segmentsl[3] or {Pos = hand, Len = limblength}
