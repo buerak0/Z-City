@@ -85,12 +85,11 @@ hook.Add("HG.InputMouseApply", "fakeCameraAngles2", function(tbl)
 	local att = follow:GetAttachment(follow:LookupAttachment("eyes"))
 	if not att or not istable(att) then return end
 	local att_Ang = att.Ang
-	local lerp = 0--(-angle.pitch / 90 - 0.7) / 0.3
 	
 	angle.roll = angle.roll - (lply.addvpangles and lply.addvpangles[3] or 0)
 
 	local oldroll = angle.roll
-	angle.roll = hg_oldfakecam:GetBool() and Lerp(lerp, 0, angle.roll) or angle.roll
+	angle.roll = hg_oldfakecam:GetBool() and 0 or angle.roll
 
 	local q = Quaternion():SetAngle(angle)
 
@@ -104,7 +103,7 @@ hook.Add("HG.InputMouseApply", "fakeCameraAngles2", function(tbl)
 
 	angle.pitch = newAng.p
     angle.yaw = newAng.y
-    angle.roll = hg_oldfakecam:GetBool() and Lerp(lerp, oldroll + newAng.r, newAng.r) or newAng.r
+    angle.roll = hg_oldfakecam:GetBool() and oldroll + newAng.r or newAng.r
 
 	if wep.IsResting and wep:IsResting() then
 		angle.roll = math.Clamp(angle.roll, -15, 15)
