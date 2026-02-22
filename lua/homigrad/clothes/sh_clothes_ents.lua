@@ -147,23 +147,15 @@ local clothes = {
             [ZC_CLOTHES_SLOT_TORSO] = true
         },
         Male = {
-            Model = "models/tnb/halflife2/cca/male_torso_metropolice_winter.mdl",
-            ModelSubMaterials = {
-                ["models/tnb/cca/c13/metro13_retail"] = "NULL",
-                ["models/tnb/cca/c13/metro13_armband4"] = "NULL",
-                ["models/tnb/cca/c13/metro13_fc"] = "NULL"
-            },
+            Model = "models/zcity/clothes/taconbanana/male_winter_jacket.mdl",
+            ModelSubMaterials = {},
             HideSubMaterails = {"models/humans/male/group01/players_sheet"},
             Skin = 2,
             Bodygroups = "0000000000000"
         },
         FeMale = {
-            Model = "models/tnb/halflife2/cca/female_torso_metropolice_winter.mdl",
-            ModelSubMaterials = {
-                ["models/tnb/cca/c13/metro13_retail"] = "NULL",
-                ["models/tnb/cca/c13/metro13_armband4"] = "NULL",
-                ["models/tnb/cca/c13/metro13_fc"] = "NULL"
-            },
+            Model = "models/zcity/clothes/taconbanana/female_winter_jacket.mdl",
+            ModelSubMaterials = {},
             HideSubMaterails = {"models/humans/female/group01/players_sheet"},
             Skin = 2,
             Bodygroups = "0000000000000"
@@ -178,23 +170,15 @@ local clothes = {
             [ZC_CLOTHES_SLOT_TORSO] = true
         },
         Male = {
-            Model = "models/tnb/halflife2/cca/male_torso_metropolice_winter.mdl",
-            ModelSubMaterials = {
-                ["models/tnb/cca/c13/metro13_retail"] = "NULL",
-                ["models/tnb/cca/c13/metro13_armband4"] = "NULL",
-                ["models/tnb/cca/c13/metro13_fc"] = "NULL"
-            },
+            Model = "models/zcity/clothes/taconbanana/male_winter_jacket.mdl",
+            ModelSubMaterials = {},
             HideSubMaterails = {"models/humans/male/group01/players_sheet"},
             Skin = 3,
             Bodygroups = "0000000000000"
         },
         FeMale = {
-            Model = "models/tnb/halflife2/cca/female_torso_metropolice_winter.mdl",
-            ModelSubMaterials = {
-                ["models/tnb/cca/c13/metro13_retail"] = "NULL",
-                ["models/tnb/cca/c13/metro13_armband4"] = "NULL",
-                ["models/tnb/cca/c13/metro13_fc"] = "NULL"
-            },
+            Model = "models/zcity/clothes/taconbanana/female_winter_jacket.mdl",
+            ModelSubMaterials = {},
             HideSubMaterails = {"models/humans/female/group01/players_sheet"},
             Skin = 3,
             Bodygroups = "0000000000000"
