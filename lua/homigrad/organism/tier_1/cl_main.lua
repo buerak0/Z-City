@@ -274,7 +274,6 @@ hook.Add("radialOptions", "DislocatedJaw", function()
 end)
 
 hook.Add("PostRender", "screenshot_think", function()
-	do return end
 	local org = lply.organism
 	
 	if not org or not org.brain or org.otrub or !lply:Alive() then return end
@@ -315,7 +314,6 @@ local lerpedpart = 0
 local lerpedbrain = 0
 
 hook.Add("Post Pre Post Processing", "ShowScreens", function()
-	do return end
 	local org = lply.organism
 	
 	if !lply:Alive() then return end
