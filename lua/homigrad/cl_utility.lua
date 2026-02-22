@@ -903,3 +903,12 @@ players : 1 humans, 0 bots (20 max)
 		return !game.SinglePlayer() -- i hate singleplayer in gmod. WHY I SHOULD DO THIS STUPID IDIOTIC SHIT, i hate it.
 	end)
 --//
+
+--\\ Remove sfbreath effect
+	hook.Add("Think","RemoveSF2_breath",function()
+		hook.Remove("PostPlayerDraw", "StormFox2.Effect.Breath")
+		timer.Remove("StormFox2.Effect.BreathT")
+
+		hook.Remove("Think","RemoveSF2_breath")
+	end)
+--//
