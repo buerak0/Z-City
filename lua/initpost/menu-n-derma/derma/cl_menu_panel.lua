@@ -209,7 +209,7 @@ function PANEL:Init()
     zteam:DockMargin(ScreenScale(10), 0, 0, 0)
     zteam:SetFont("ZCity_Tiny")
     zteam:SetTextColor(clr_gray)
-    zteam:SetText("Authors: uzelezz, Sadsalat, Mr.Point, Zac90, Deka, Mannytko")
+    zteam:SetText("Authors: uzelezz, Sadsalat, \nMr.Point, Zac90, Deka, Mannytko")
     zteam:SetContentAlignment(4)
     zteam:SizeToContents()
 end
