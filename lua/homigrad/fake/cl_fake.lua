@@ -49,6 +49,7 @@ local anglesadd = Angle()
 local oldangs = Angle()
 local lerpedq = Quaternion()
 local hg_newfakecam = ConVarExists("hg_newfakecam") and GetConVar("hg_newfakecam") or CreateConVar("hg_newfakecam", 0, FCVAR_ARCHIVE, "New camera rotate", 0, 1)
+local rollang = 0
 hook.Add("HG.InputMouseApply", "fakeCameraAngles2", function(tbl)
 	local cmd = tbl.cmd
 	local x = tbl.x
@@ -72,6 +73,7 @@ hook.Add("HG.InputMouseApply", "fakeCameraAngles2", function(tbl)
 		lean_lerp = 0
 	end
 	
+	--local follow = follow or lply
 	if lply:InVehicle() and not IsValid(follow) then
 		tbl.override_angle = true
 		tbl.angle = angle_zero
@@ -88,22 +90,28 @@ hook.Add("HG.InputMouseApply", "fakeCameraAngles2", function(tbl)
 	if not att or not istable(att) then return end
 	local att_Ang = att.Ang
 	local vel = follow:GetVelocity()
-	local huy = vel:Dot(angle:Right()) / 2000
-	
+	local huy = vel:Dot(angle:Right()) / 1500
+
 	angle.roll = angle.roll - (lply.addvpangles and lply.addvpangles[3] or 0)
 	angle.roll = math.NormalizeAngle(angle.roll)
-	local adda = math.Clamp((0.7 - math.abs(angle.roll / 90)), 0, 1) * math.Clamp((0.7 - math.abs(angle.pitch / 90)), 0, 1)
-	angle.roll = math.Approach(angle.roll, math.Round(angle.roll / 180) * 180, adda * ftlerped * 80)
+	local adda = 1--math.Clamp((0.7 - math.abs(angle.roll / 90)), 0, 1) * math.Clamp((0.7 - math.abs(angle.pitch / 90)), 0, 1)
+	
+	local angle2 = -(-angle)
+	rollang = follow == lply.OldRagdoll and 0 or rollang
+	angle2.roll = rollang
+	angle = LerpAngleFT(follow == lply.OldRagdoll and 0.05 or 0.01, angle, angle2)--math.Approach(angle.roll, rollang, adda * ftlerped * 80)
 	
 	local fucke = false--!hg_newfakecam:GetBool()
 	local oldroll = angle.roll
 	angle.roll = fucke and 0 or angle.roll
-	
+
+	rollang = rollang + lean_lerp * 0.5
+
 	local q = Quaternion():SetAngle(angle)
 
     local q_pitch = Quaternion():SetAngleAxis(y / 50, Vector(0, 1, 0))
     local q_yaw = Quaternion():SetAngleAxis(-x / 50, Vector(0, 0, 1))
-    local q_roll = Quaternion():SetAngleAxis(lean_lerp * 0.5 + huy + x / 150, Vector(1, 0, 0))
+    local q_roll = Quaternion():SetAngleAxis(lean_lerp * 0.5 + huy + x / 50 * math.abs(angle.pitch / 90), Vector(1, 0, 0))
 	
 	q = q * q_pitch * q_yaw * q_roll
 
