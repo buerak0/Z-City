@@ -116,8 +116,8 @@ module[2] = function(owner, org, timeValue)
 		org.heartstoptime = nil
 	end
 
-	if org.alive and org.heartstoptime and org.heartstoptime + 30 < CurTime() and (org.lastsoundtime or 0) < CurTime() and org.o2.regen > 0 and org.otrub then
-		org.owner:EmitSound("zcitysnd/real_sonar/"..(ThatPlyIsFemale(org.owner) and "female" or "male").."_wheeze"..math.random(5)..".mp3", 50)
+	if org.alive and org.heartstoptime and org.heartstoptime + 30 < CurTime() and (org.lastsoundtime or 0) < CurTime() and org.otrub then
+		org.owner:EmitSound("breathing/agonalbreathing_"..math.random(13)..".wav", 60)
 		--org.owner:EmitSound("breathing/agonalbreathing_"..math.random(13)..".wav", 50)
 		
 		org.lastsoundtime = CurTime() + math.random(25,35)
