@@ -1385,6 +1385,39 @@ hg.ammotypes = {
 			Icon = matPistolAmmo
 		}
 	},
+	["7.62x25mm"] = {
+		name = "7.62x25 mm",
+		allowed = true,
+		dmgtype = DMG_BULLET,
+		tracer = TRACER_LINE,
+		plydmg = 0,
+		npcdmg = 0,
+		force = 120,
+		maxcarry = 100,
+		minsplash = 1,
+		maxsplash = 1,
+		TracerSetings = {
+			TracerBody = Material("particle/fire"),
+			TracerTail = Material("effects/laser_tracer"),
+			TracerHeadSize = 5,
+			TracerLength = 75,
+			TracerWidth = 1.5,
+			TracerColor = Color(255, 237, 155),
+			TracerTPoint1 = 0.25,
+			TracerTPoint2 = 1,
+			TracerSpeed = 25000
+		},
+		BulletSettings = {
+			Damage = 35,
+			Force = 35,
+			Penetration = 9,
+			Shell = "10mm",
+			Speed = 376,
+			Diameter = 10,
+			Mass = 10,
+			Icon = matPistolAmmo
+		}
+	},
 	["9x19mmgreentracer"] = {
 		name = "9x19 mm Green Tracer",
 		allowed = true,
@@ -1561,7 +1594,7 @@ hg.ammotypes = {
 			Damage = 35,
 			Force = 32,
 			Penetration = 1,
-			Shell = "9x18",
+			Shell = "50ae",
 			Speed = 250,
 			Diameter = 18,
 			Mass = 22,
@@ -1595,7 +1628,7 @@ hg.ammotypes = {
 			Damage = 15,
 			Force = 10,
 			Penetration = 2,
-			Shell = "9x18",
+			Shell = "50ae",
 			Speed = 250,
 			Diameter = 18,
 			Distance = 32,
@@ -1781,7 +1814,7 @@ hg.ammotypes = {
 			Damage = 550,
 			Force = 100,
 			Penetration = 320,
-			Shell = "762x39",
+			Shell = "50cal",
 			Speed = 1000,
 			Diameter = 14.5,
 			Mass = 64,
@@ -1813,7 +1846,7 @@ hg.ammotypes = {
 			Damage = 250,
 			Force = 100,
 			Penetration = 320,
-			Shell = "762x39",
+			Shell = "50cal",
 			Speed = 1000,
 			Diameter = 14.5,
 			Mass = 64,
@@ -2795,6 +2828,10 @@ local ammoents = {
 	},
 	[".45acp"] = {
 		Model = "models/zcity/ammo/ammo_1143x23_fmj.mdl"
+	},
+	["7.62x25mm"] = {
+		Material = "models/hmcd_ammobox_22",
+		Color = Color(155, 149, 95)
 	},
 	[".45acphydroshock"] = {
 		Model = "models/zcity/ammo/ammo_1143x23_hydro.mdl"
