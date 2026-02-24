@@ -165,7 +165,7 @@ if SERVER then
 			ent:Kill()
 		end
 
-		if ent.PlayerClassName and ent.PlayerClassName != "furry" then
+		if !ent.PlayerClassName or ent.PlayerClassName != "furry" then
 			org.berserk = org.berserk + 2
 		else
 			org.o2["curregen"] = 0
