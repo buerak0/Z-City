@@ -1001,7 +1001,7 @@ local IsValid = IsValid
 		if !self.shouldTransmit then return end
 
 		ent = IsValid(ent) and ent or self
-
+		if ent:GetMaterial() == "NULL" then return end
 		if not IsValid(ent) then return end
 
 		--local drawornot = hook_Run("PreDrawPlayer2", ent, self) // true means nodraw
