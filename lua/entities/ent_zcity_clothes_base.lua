@@ -36,7 +36,7 @@ ENT.NameAng = Angle(0,-90,0)
 local textcolor = Color(0, 0, 0)
 
 function ENT:Draw()
-    if self:GetMoveType() == MOVETYPE_NONE then self:DrawShadow(false) return end
+    if self:GetMoveType() == MOVETYPE_NONE or self.GetEquiped and self:GetEquiped() then self:DrawShadow(false) return end
     self:DrawModel()
 
     local pos, ang = LocalToWorld(self.NamePos * self:GetModelScale(), self.NameAng, self:GetPos(), self:GetAngles())
@@ -54,6 +54,10 @@ function ENT:Draw()
 end
 
 function ENT:SetupDataTables()
+    self:NetworkVar( "Bool", "Equiped" )
+    if SERVER then
+        self:SetEquiped(true)
+    end
 end
 
 function ENT:Initialize()
@@ -141,6 +145,7 @@ end
         self:SetSolid(SOLID_NONE)
         self:AddEFlags(EFL_KEEP_ON_RECREATE_ENTITIES)
         self:DrawShadow(false)
+        self:SetEquiped(true)
 
         self:OnWear(entUser)
     end
@@ -172,6 +177,7 @@ end
         self:SetSolid(SOLID_VPHYSICS)
         self:RemoveEFlags(EFL_KEEP_ON_RECREATE_ENTITIES)
         self:DrawShadow(true)
+        self:SetEquiped(false)
 
         timer.Simple(0,function()
             if !IsValid(self) and !IsValid(entUser) then return end
