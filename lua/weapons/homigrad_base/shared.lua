@@ -1465,13 +1465,13 @@ hg.postureFunctions2 = {
 	end,
 	[2] = function(self,ply)
 		local add = (hg.GunPositions[ply] and hg.GunPositions[ply][2]) or 0
+		self.AdditionalAngPreLerp[3] = self.AdditionalAngPreLerp[3] - 15
 		self.AdditionalPosPreLerp[3] = self.AdditionalPosPreLerp[3] - 6 - add
 		if self:IsPistolHoldType() then return end
 		self.AdditionalPosPreLerp[1] = self.AdditionalPosPreLerp[1] + 2
 		self.AdditionalPosPreLerp[2] = self.AdditionalPosPreLerp[2] + 1
 
 		self.AdditionalAngPreLerp[1] = self.AdditionalAngPreLerp[1] - 2
-		self.AdditionalAngPreLerp[3] = self.AdditionalAngPreLerp[3] - 15
 		--self.AdditionalAngPreLerp[1] = self.AdditionalAngPreLerp[1] - 4
 		--self.AdditionalAngPreLerp[2] = self.AdditionalAngPreLerp[2] + 7
 	end,
@@ -1529,6 +1529,7 @@ hg.postureFunctions2 = {
 		if self:IsPistolHoldType() then
 			self.AdditionalPosPreLerp[2] = self.AdditionalPosPreLerp[2] - 2
 			self.AdditionalPosPreLerp[3] = self.AdditionalPosPreLerp[3] + 6 - add
+			self.AdditionalAngPreLerp[3] = self.AdditionalAngPreLerp[3] + 10
 		else
 			self.AdditionalPosPreLerp[1] = self.AdditionalPosPreLerp[1] - -5
 			self.AdditionalPosPreLerp[2] = self.AdditionalPosPreLerp[2] + -2
