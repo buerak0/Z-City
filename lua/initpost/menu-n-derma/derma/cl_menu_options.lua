@@ -72,11 +72,11 @@ hg.settings:AddOpt("Debug","hg_setzoompos", "Edit weapon zoompos, check console 
 hg.settings:AddOpt("Debug","hg_show_hitbox", "Show hitboxes")
 
 hg.settings:AddOpt("Optimization","hg_potatopc", "Potato PC Mode")
-hg.settings:AddOpt("Optimization","hg_anims_draw_distance", "Animations Draw Distance")
-hg.settings:AddOpt("Optimization","hg_anim_fps", "Animations FPS")
-hg.settings:AddOpt("Optimization","hg_attachment_draw_distance", "Attachment Draw Distance")
-hg.settings:AddOpt("Optimization","hg_maxsmoketrails", "Maximum Smoke Trails")
-hg.settings:AddOpt("Optimization","hg_tpik_distance", "TPIK Render Distance")
+hg.settings:AddOpt("Optimization","hg_anims_draw_distance", "Animations Draw Distance", true, nil, "int")
+hg.settings:AddOpt("Optimization","hg_anim_fps", "Animations FPS", nil, nil, "int")
+hg.settings:AddOpt("Optimization","hg_attachment_draw_distance", "Attachment Draw Distance", true, nil, "int")
+hg.settings:AddOpt("Optimization","hg_maxsmoketrails", "Maximum Smoke Trails", nil, nil, "int")
+hg.settings:AddOpt("Optimization","hg_tpik_distance", "TPIK Render Distance", true, nil, "int")
 
 hg.settings:AddOpt("Blood","hg_blood_draw_distance", "Blood Draw Distance")
 hg.settings:AddOpt("Blood","hg_blood_fps", "Blood FPS")
