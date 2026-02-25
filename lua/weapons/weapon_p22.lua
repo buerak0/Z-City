@@ -118,7 +118,7 @@ SWEP.Primary.Damage = 16
 SWEP.Primary.Sound = {"arccw_uc/common/fire-22-01.ogg", 70, 90, 100}
 SWEP.Primary.SoundFP = {"arccw_uc/common/fire-22-01.ogg", 70, 90, 100}
 
-SWEP.DistSound = "arccw_uc/common/fire-22-dist-01.ogg"
+SWEP.DistSound = ""
 
 SWEP.SupressedSound = {"arccw_uc/common/fire-22-sup-01.ogg", 65, 90, 100}
 SWEP.SupressedSoundFP = {"arccw_uc/common/fire-22-sup-01.ogg", 65, 90, 100}
