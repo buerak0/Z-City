@@ -391,7 +391,20 @@ hg.ConVars = hg.ConVars or {}
 			return math.Clamp(((consciousness - 1) * 3 + 1), 0.4, 1)
 		end
 
-		hook.Add("Think", "viewpunch_think", function(ply, cmd)
+		function hg.InGame()
+			local x, y = input.GetCursorPos()
+
+			return !(vgui.CursorVisible() or (x == 0 and y == 0))
+		end
+
+		hook.Add("Think", "vp_think", function()
+			if IsValid(lply.FakeRagdoll) and hg.InGame() then return end
+			
+			hook.Run("ViewpunchThink")
+		end)
+
+		local lastplyroll
+		hook.Add("ViewpunchThink", "viewpunch_think", function(tblang)
 			--if lply:InVehicle() then return end
 
 			local consmul = hg.CalculateConsciousnessMul()
@@ -457,10 +470,22 @@ hg.ConVars = hg.ConVars or {}
 			local consmulrev = 1 - consmul
 			if vp_punch_angle:IsZero() and vp_punch_angle_velocity:IsZero() and vp_punch_angle2:IsZero() and vp_punch_angle_velocity2:IsZero() and vp_punch_angle3:IsZero() and vp_punch_angle_velocity3:IsZero() and  vp_punch_angle4:IsZero() and vp_punch_angle_velocity4:IsZero() then return end
 			local add = vp_punch_angle - vp_punch_angle_last + vp_punch_angle2 - vp_punch_angle_last2 + vp_punch_angle3 - vp_punch_angle_last3 + vp_punch_angle4 * consmulrev - vp_punch_angle_last4 * consmulrev
-			local ang = lply:EyeAngles() + add
-			lply.addvpangles = add
+			if lply.organism and lply.organism.otrub then add:Zero() end
+			
+			if hg.InGame() then
+				lastplyroll = lply:EyeAngles()[3]
+			end
+			
+			local angs = lply:EyeAngles()
+			angs[3] = lastplyroll or angs[3]
+
+			local ang = angs + add
 
 			lply:SetEyeAngles(ang)
+			if tblang then
+				tblang.angle = tblang.angle + add
+				tblang.vpangle = add
+			end
 			vp_punch_angle_last = vp_punch_angle
 			vp_punch_angle_last2 = vp_punch_angle2
 			vp_punch_angle_last3 = vp_punch_angle3

@@ -267,7 +267,7 @@ players : 1 humans, 0 bots (20 max)
 				CustomAmmoType = hg.ammotypeshuy[bullet.AmmoType]
 			end
 			local subsonic = !(CustomAmmoType and CustomAmmoType.BulletSettings and CustomAmmoType.BulletSettings.Speed and CustomAmmoType.BulletSettings.Speed > 340)
-			print(subsonic)
+			
 			local tr = bullet.Trace
 			local mr = math.random(17)
 			local view = render.GetViewSetup(true)

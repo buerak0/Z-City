@@ -355,7 +355,7 @@ local hg_potatopc
 local old = false
 local tinnitusSoundFactor
 local lerpblood = 0
-hook.Add("RenderScreenspaceEffects", "organism-effects", function()
+hook.Add("Post Post Pre Post Processing", "organism-effects", function()
 	local spect = IsValid(lply:GetNWEntity("spect")) and lply:GetNWEntity("spect")
 	local organism = lply:Alive() and lply.organism or (viewmode == 1 and IsValid(spect) and spect.organism) or {}
 	local new_organism = lply:Alive() and lply.new_organism or (viewmode == 1 and IsValid(spect) and spect.new_organism) or {}
