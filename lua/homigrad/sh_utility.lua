@@ -478,9 +478,9 @@ hg.ConVars = hg.ConVars or {}
 			
 			local angs = lply:EyeAngles()
 			angs[3] = lastplyroll or angs[3]
-
+			
 			local ang = angs + add
-
+			
 			lply:SetEyeAngles(ang)
 			if tblang then
 				tblang.angle = tblang.angle + add
@@ -2163,6 +2163,7 @@ local IsValid = IsValid
 
 	hook.Add("CreateEntityRagdoll", "npcloot", function(ent, rag)
 		local loot = lootNPCs[ent:GetClass()]
+		rag:SetCollisionGroup(COLLISION_GROUP_WEAPON)
 		if IsValid(ent) and IsValid(rag) and ent:IsNPC() and loot then
 			rag.inventory = {}
 			rag.inventory.Weapons = {}

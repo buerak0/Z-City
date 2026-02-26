@@ -340,6 +340,8 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 		wep:DrawAttachments()
 	end--]]
 	
+	if ply.organism and ply.organism.otrub then view.angles = att_Ang end
+
 	if hg_gopro:GetBool() then
 		return SpecCam(follow, origin, angles, fov, znear, zfar)
 	end
