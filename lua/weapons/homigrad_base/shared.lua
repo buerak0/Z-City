@@ -336,6 +336,8 @@ if CLIENT then
 		EmitSound = hg.EmitSound
 	end)
 end
+local hg_gopro = ConVarExists("hg_gopro") and GetConVar("hg_gopro") or CreateClientConVar("hg_gopro", "0", true, false, "Toggle GoPro-like first-person camera view", 0, 1)
+local hg_distortedsounds = ConVarExists("hg_distortedsounds") and GetConVar("hg_distortedsounds") or CreateClientConVar("hg_distortedsounds", "0", true, false, "Toggle distorted sounds for the gunshots", 0, 1)
 
 local math_random = math.random
 function SWEP:PlaySnd(snd, server, chan, vol, pitch, entity, tripleaffirmative)
@@ -343,6 +345,7 @@ function SWEP:PlaySnd(snd, server, chan, vol, pitch, entity, tripleaffirmative)
 	local owner = self:GetOwner()
 	owner = IsValid(owner) and owner or self
 
+	local dsproom = (hg_distortedsounds:GetBool() or hg_gopro:GetBool()) and 18 or nil
 	if CLIENT then
 		local view = render.GetViewSetup(true)
 		local time = owner:GetPos():Distance(view.origin) / 17836
@@ -352,18 +355,18 @@ function SWEP:PlaySnd(snd, server, chan, vol, pitch, entity, tripleaffirmative)
 
 			if type(snd) == "table" then
 				local rand = math.random(-5,5)
-				EmitSound( snd[1], owner:GetPos(), (entity or owner:EntIndex()) + owner:EntIndex(), CHAN_WEAPON, vol, snd[2] or (self.Supressor and 75 or 75), nil, (pitch or 100) + rand)
+				EmitSound( snd[1], owner:GetPos(), (entity or owner:EntIndex()) + owner:EntIndex(), CHAN_WEAPON, vol, snd[2] or (self.Supressor and 75 or 75), nil, (pitch or 100) + rand, dsproom)
 				if tripleaffirmative and !hg_quietshots:GetBool() then
-					EmitSound( snd[1], owner:GetPos()-vector_up, (entity or owner:EntIndex()) + 1 + owner:EntIndex(), CHAN_WEAPON, vol, snd[2] or (self.Supressor and 75 or 75), nil, (pitch or 100) + rand)
-					EmitSound( snd[1], owner:GetPos(), (entity or owner:EntIndex()) + 2 + owner:EntIndex(), CHAN_WEAPON, vol, (snd[2] or (self.Supressor and 75 or 75)) + 1, nil, (pitch or 100) + rand)
+					EmitSound( snd[1], owner:GetPos()-vector_up, (entity or owner:EntIndex()) + 1 + owner:EntIndex(), CHAN_WEAPON, vol, snd[2] or (self.Supressor and 75 or 75), nil, (pitch or 100) + rand, dsproom)
+					EmitSound( snd[1], owner:GetPos(), (entity or owner:EntIndex()) + 2 + owner:EntIndex(), CHAN_WEAPON, vol, (snd[2] or (self.Supressor and 75 or 75)) + 1, nil, (pitch or 100) + rand, dsproom)
 				end
 				-- self:EmitSound(snd[1], (snd[2] or (self.Supressor and 75 or 75)), (pitch or 100) + rand, vol, CHAN_AUTO)
 			else
 				local rand = math.random(-5,5)
-				EmitSound( snd, owner:GetPos(), (entity or owner:EntIndex()) + owner:EntIndex(), CHAN_WEAPON, vol, (self.Supressor and 75 or 75), nil, (pitch or 100) + rand)
+				EmitSound( snd, owner:GetPos(), (entity or owner:EntIndex()) + owner:EntIndex(), CHAN_WEAPON, vol, (self.Supressor and 75 or 75), nil, (pitch or 100) + rand, dsproom)
 				if tripleaffirmative and !hg_quietshots:GetBool() then
-					EmitSound( snd, owner:GetPos()-vector_up, (entity or owner:EntIndex()) + 1 + owner:EntIndex(), CHAN_WEAPON, vol, (self.Supressor and 75 or 75), (pitch or 100) + rand)
-					EmitSound( snd, owner:GetPos(), (entity or owner:EntIndex()) + 2 + owner:EntIndex(), CHAN_WEAPON, vol, ((self.Supressor and 75 or 75)) + 1, nil, (pitch or 100) + rand)
+					EmitSound( snd, owner:GetPos()-vector_up, (entity or owner:EntIndex()) + 1 + owner:EntIndex(), CHAN_WEAPON, vol, (self.Supressor and 75 or 75), nil, (pitch or 100) + rand, dsproom)
+					EmitSound( snd, owner:GetPos(), (entity or owner:EntIndex()) + 2 + owner:EntIndex(), CHAN_WEAPON, vol, ((self.Supressor and 75 or 75)) + 1, nil, (pitch or 100) + rand, dsproom)
 				end
 				-- self:EmitSound(snd[1], ((self.Supressor and 75 or 75)), (pitch or 100) + rand, vol, CHAN_AUTO)
 			end
