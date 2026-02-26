@@ -307,10 +307,16 @@ players : 1 humans, 0 bots (20 max)
 				or bullet.Damage >= 30 and "cracks/" .. "medium/med" .. "_crack_0" .. mr .. ".ogg"
 				or "cracks/" .. "light/light" .. "_crack_0" .. mr .. ".ogg"
 
-			if dist < 180 then EmitSound(SND, pos - tr.Normal * 25, 0, CHAN_AUTO, 1, 65) end
+			if dist < 180 then
+				timer.Simple(0.01,function()
+					EmitSound("weapons/bullets/fx/subsonic_0" .. mr .. ".wav", pos - tr.Normal * 25, 0, CHAN_AUTO, 1, 55)
+				end)
+				-- EmitSound(SND, pos - tr.Normal * 25, 0, CHAN_AUTO, 1, 65) 
+			end
 			if dist > 120 then return end
-
-			EmitSound(SND, pos - tr.Normal * 25, 0, CHAN_AUTO, 1, 75)
+			if !subsonic then
+				EmitSound(SND, pos - tr.Normal * 25, 0, CHAN_AUTO, 1, 75)
+			end
 
 			dist = dist / math.abs((tr.HitPos - tr.StartPos):GetNormalized():Dot((tr.StartPos - eyePos):GetNormalized()))
 			dist = math.Clamp(1 / dist, 0.05,0.25)
