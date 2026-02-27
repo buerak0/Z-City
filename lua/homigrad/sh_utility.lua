@@ -562,6 +562,10 @@ hg.ConVars = hg.ConVars or {}
 			Viewpunch4(angle)
 		end
 
+		function GetAllViewPunchAngles()
+			return GetViewPunchAngles() + GetViewPunchAngles2() + GetViewPunchAngles3() + GetViewPunchAngles4()
+		end
+
 		function GetViewPunchAngles()
 			return vp_punch_angle
 		end

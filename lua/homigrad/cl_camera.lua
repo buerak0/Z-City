@@ -495,7 +495,12 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 		view.angles = FPersPos.Ang
 		return view
 	end--]]
-	if hg_gopro:GetBool() then return SpecCam(ply, origin, angles, fov, znear, zfa) end
+	if hg_gopro:GetBool() then
+		local vpangs = GetAllViewPunchAngles()
+		local anglegopro = Angle(0, vpangs[1], -vpangs[2])--Angle(vpangs[2], -vpangs[1], vpangs[3])
+		hg.bone.Set(ply, "head", vector_origin, anglegopro, "gopro")
+		return SpecCam(ply, origin, angles, fov, znear, zfa)
+	end
 
 	if result == view then
 		traceBuilder.start = origin
