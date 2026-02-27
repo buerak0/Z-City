@@ -1033,7 +1033,7 @@ end)
 
 hook.Add( "Move", "hg_RagdollIntoWalls", function( ply, mv)
 	local vel = mv:GetVelocity()
-	if ply:GetMoveType() == MOVETYPE_WALK and vel:Length() > 750 and not hg.GetCurrentCharacter(ply):IsRagdoll() then
+	if ply:GetMoveType() == MOVETYPE_WALK and vel:LengthSqr() > 750 * 750 and not hg.GetCurrentCharacter(ply):IsRagdoll() and !(ply.IsStimulated and ply:IsStimulated()) then
 		local tr = util.TraceLine({
 			start = ply:GetPos(),
 			endpos = ply:GetPos() + vel:Angle():Forward() * 100,
