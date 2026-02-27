@@ -1,7 +1,7 @@
 local maxLength = CreateConVar("zchat_maxmessagelength", "256", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "Maximum message length allowed")
 
 if CLIENT then
-	local fontSize = CreateClientConVar("zchat_fontsize", 5.5, true, false, "Self explanatory", 3, 10)
+	local fontSize = CreateClientConVar("zchat_fontsize", 7, true, false, "Self explanatory", 3, 10)
 	local fontName = CreateClientConVar("zchat_font", "Bahnschrift", true, false, "Self explanatory, should be available to GMod")
 	local fontAA = CreateClientConVar("zchat_fontaa", 1, true, false, "Font anti-aliasing", 0, 1)
 	local fontWeight = CreateClientConVar("zchat_fontweight", 1000, true, false, "Font weight", 0, 1000)

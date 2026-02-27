@@ -14,8 +14,10 @@ SWEP.ViewModelFOV = 60
 SWEP.BobScale = 0.5
 SWEP.SwayScale = 1.0
 
-SWEP.ViewModel = "models/weapons/v_physcannon.mdl"
-SWEP.WorldModel = "models/weapons/w_physics.mdl"
+SWEP.ViewModel = ""
+SWEP.WorldModel = "models/props_c17/tools_wrench01a.mdl"
+SWEP.offsetVec = Vector(3.5, -1.8, -2)
+SWEP.offsetAng = Angle(0, 90, -90)
 
 if CLIENT then
     SWEP.DrawCrosshair = false
@@ -25,7 +27,7 @@ if CLIENT then
 end
 
 SWEP.DrawAmmo = false
-SWEP.HoldType = "physgun"
+SWEP.HoldType = "slam"
 
 SWEP.Primary.Ammo = "none"
 SWEP.Primary.ClipSize = -1
@@ -36,6 +38,7 @@ SWEP.Secondary.Ammo = "none"
 SWEP.Secondary.ClipSize = -1
 SWEP.Secondary.DefaultClip = 0
 SWEP.Secondary.Automatic = false
+SWEP.WorkWithFake = true
 
 function SWEP:Initialize()
     self:SetHoldType( self.HoldType )
@@ -72,22 +75,36 @@ function SWEP:GetVehicleFromTrace( trace, user )
     end
 end
 
+function SWEP:GetEyeTrace()
+	return hg.eyeTrace(self:GetOwner())
+end
+
 function SWEP:Think()
     local user = self:GetOwner()
 
     if IsValid( user ) then
-        self.repairTarget, self.repairTrace = self:GetVehicleFromTrace( user:GetEyeTraceNoCursor(), user )
+        self.repairTarget, self.repairTrace = self:GetVehicleFromTrace( self:GetEyeTrace(), user )
     end
 end
 
 local CurTime = CurTime
 local REPAIR_SOUND = "glide/train/track_clank_%d.wav"
+local anims_rnd = {
+	ACT_HL2MP_GESTURE_RANGE_ATTACK_KNIFE,
+	ACT_HL2MP_GESTURE_RANGE_ATTACK_MELEE,
+	ACT_HL2MP_GESTURE_RANGE_ATTACK_FIST,
+	ACT_HL2MP_GESTURE_RANGE_ATTACK_SLAM,
+	ACT_HL2MP_GESTURE_RANGE_ATTACK_PISTOL
+}
 
 function SWEP:PrimaryAttack()
     local user = self:GetOwner()
     if not IsValid( user ) then return end
 
-    self:SetNextPrimaryFire( CurTime() + 0.1 )
+    self:SetNextPrimaryFire( CurTime() + 0.5 )
+	if user:IsPlayer() then
+		user:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, anims_rnd[math.random(#anims_rnd)], true )
+	end
 
     if not SERVER then return end
 
@@ -119,7 +136,7 @@ function SWEP:PrimaryAttack()
         engineHealth = math.Clamp( engineHealth + ( 0.03 * repairMul ), 0, 1 )
 
         if user.ViewPunch then
-            user:ViewPunch( Angle( -0.2, 0, 0 ) )
+            user:ViewPunch( AngleRand( -3, 3 ) )
         end
 
         if chassisHealth > 0.3 and ent.SetIsEngineOnFire then
@@ -144,9 +161,6 @@ function SWEP:PrimaryAttack()
     ent:SetChassisHealth( chassisHealth )
     ent:SetEngineHealth( engineHealth )
 
-    self:SendWeaponAnim( ACT_VM_PRIMARYATTACK )
-    user:SetAnimation( PLAYER_ATTACK1 )
-
     if ent.UpdateHealthOutputs then
         ent:UpdateHealthOutputs()
     end
@@ -154,13 +168,21 @@ function SWEP:PrimaryAttack()
     local trace = self.repairTrace
 
     if trace then
-        local data = EffectData()
-        data:SetOrigin( trace.HitPos + trace.HitNormal * 5 )
-        data:SetNormal( trace.HitNormal )
-        data:SetScale( 1 )
-        data:SetMagnitude( 1 )
-        data:SetRadius( 3 )
-        util.Effect( "cball_bounce", data, false, true )
+		if math.random(4) == 2 then
+			local data = EffectData()
+			data:SetOrigin( trace.HitPos + trace.HitNormal * 5 )
+			data:SetNormal( trace.HitNormal )
+			data:SetScale( 1 )
+			data:SetMagnitude( 1 )
+			data:SetRadius( 2 )
+			util.Effect( "cball_bounce", data, false, true )
+		end
+
+		local Poof = EffectData()
+		Poof:SetOrigin( trace.HitPos )
+		Poof:SetScale( math.random(1, 5) )
+		Poof:SetNormal( -trace.HitNormal )
+		util.Effect( "eff_jack_hmcd_poof", Poof, true, true )
     end
 end
 
@@ -194,4 +216,38 @@ function SWEP:DrawHUD()
     Glide.DrawVehicleHealth( x, y, w, h, ent.VehicleType, ent:GetChassisHealth() / ent.MaxChassisHealth, ent:GetEngineHealth() )
 
     return true
+end
+
+function SWEP:DrawWorldModel()
+	if not IsValid(self:GetOwner()) then
+		self:DrawWorldModel2()
+	end
+end
+
+function SWEP:DrawWorldModel2()
+	self.model = IsValid(self.model) and self.model or ClientsideModel(self.WorldModel)
+	local WorldModel = self.model
+	local owner = self:GetOwner()
+	WorldModel:SetNoDraw(true)
+	WorldModel:SetModelScale(self.ModelScale or 1)
+	local renderGuy = hg.GetCurrentCharacter(owner)
+	if IsValid(owner) then
+		local offsetVec = self.offsetVec
+		local offsetAng = self.offsetAng
+
+		local boneid = renderGuy:LookupBone("ValveBiped.Bip01_R_Hand")
+		if not boneid then return end
+		local matrix = renderGuy:GetBoneMatrix(boneid)
+		if not matrix then return end
+		local newPos, newAng = LocalToWorld(offsetVec, offsetAng, matrix:GetTranslation(), matrix:GetAngles())
+
+		WorldModel:SetPos(newPos)
+		WorldModel:SetAngles(newAng)
+		WorldModel:SetupBones()
+	else
+		WorldModel:SetPos(self:GetPos())
+		WorldModel:SetAngles(self:GetAngles())
+	end
+
+	WorldModel:DrawModel()
 end

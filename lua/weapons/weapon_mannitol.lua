@@ -53,6 +53,7 @@ end
 function SWEP:OwnerChanged()
 	local owner = self:GetOwner()
 	if IsValid(owner) and owner:IsNPC() then
+		self:SpawnGarbage("models/bloocobalt/l4d/items/w_eq_adrenaline.mdl", nil, nil, nil, "2211")
 		self:NPCHeal(owner, 0.2, "snd_jack_hmcd_needleprick.wav")
 	end
 end
@@ -60,6 +61,7 @@ end
 if SERVER then
 	function SWEP:Heal(ent, mode)
 		if ent:IsNPC() then
+			self:SpawnGarbage("models/bloocobalt/l4d/items/w_eq_adrenaline.mdl", nil, nil, nil, "2211")
 			self:NPCHeal(ent, 0.2, "snd_jack_hmcd_needleprick.wav")
 		end
 

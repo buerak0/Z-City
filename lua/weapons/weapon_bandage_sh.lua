@@ -38,6 +38,8 @@ SWEP.WorkWithFake = true
 SWEP.offsetVec = Vector(4, -3.5, 0)
 SWEP.offsetAng = Angle(90, 90, 0)
 
+local hg_healanims = CreateConVar("hg_healanims", 0, FCVAR_SERVER_CAN_EXECUTE, "Toggle heal/food animations", 0, 1)
+
 modelshuy = modelshuy or {}
 
 function SWEP:DrawWorldModel()
@@ -138,6 +140,10 @@ function SWEP:Think()
 		self.ModelScale = math.Clamp(self.modeValues[1] / (self.modeValuesdef[1][1] * 0.8), 0.5, 1)
 	end
 
+	if not self:GetOwner():KeyDown(IN_ATTACK) and hg_healanims:GetBool() then
+		self:SetHolding(math.max(self:GetHolding() - 12, 0))
+	end
+
 	--[[if self.modeValuesdef[self.mode][2] then
 		local time = CurTime()
 		local ply = self:GetOwner()
@@ -177,9 +183,7 @@ function SWEP:Think()
 end
 SWEP.net_cooldown2 = 0
 function SWEP:PrimaryAttack()
-	//self:SetHolding(math.min(self:GetHolding() + 9, 100))
 	if SERVER then--and not self.modeValuesdef[self.mode][2] then
-		//if self:GetHolding() < 100 then return end
 
 		self.healbuddy = self:GetOwner()
 		local done = self:Heal(self.healbuddy, self.mode)
@@ -196,20 +200,6 @@ function SWEP:PrimaryAttack()
 end
 
 if CLIENT then
-	surface.CreateFont("huyhuy", {
-		font = "CloseCaption_Normal", --  Use the font-name which is shown to you by your operating system Font Viewer, not the file name
-		extended = true,
-		size = ScreenScale(15),
-		weight = 500,
-		blursize = 0,
-		scanlines = 0,
-		antialias = false,
-		strikeout = false,
-		shadow = false,
-		outline = false,
-	})
-	
-
 	local colWhite = Color(255, 255, 255, 255)
 	local colGray = Color(200, 200, 200, 200)
 	local lerpthing = 1
@@ -547,18 +537,81 @@ if SERVER then
 		return done
 	end
 
-	function SWEP:Heal(ent, mode, bone)
+	local function PhysCallback(ent, data)
+		if data.DeltaTime < 0.2 then return end
+		ent:EmitSound(Sound(ent.FallSnd))
+	end
+
+	local ents_Create, gamemod, clr_garbage = ents.Create, engine.ActiveGamemode(), Color(170, 170, 170)
+	function SWEP:SpawnGarbage(mdl_custom, skin_custom, snd_custom, clr_custom, bgs_custom)
 		local owner = self:GetOwner()
-		if owner:IsNPC() then
-			self:NPCHeal(owner, 0.15, "snd_jack_hmcd_bandage.wav")
+		local boneid
+		if owner:IsPlayer() then
+			boneid = owner:LookupBone(((owner.organism and owner.organism.rarmamputated) or (owner.zmanipstart ~= nil and owner.zmanipseq == "interact" and not owner.organism.larmamputated)) and "ValveBiped.Bip01_L_Hand" or "ValveBiped.Bip01_R_Hand")
+		else
+			boneid = owner:LookupBone("ValveBiped.Bip01_R_Hand") or 1
+		end
+	
+		if not boneid then return end
+		local matrix = owner:GetBoneMatrix(boneid)
+		if not matrix then return end
+
+		local ent = ents_Create("prop_physics")
+		ent:SetModel(Model((mdl_custom and mdl_custom ~= nil and isstring(mdl_custom)) and mdl_custom or self.WorldModel))
+
+		if skin_custom and skin_custom ~= nil and isnumber(skin_custom) then
+			ent:SetSkin(skin_custom or 0)
+		end
+
+		ent:SetPos(matrix:GetTranslation())
+		ent:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
+		ent:SetAngles(AngleRand(-180, 180))
+		ent:Activate()
+		ent:Spawn()
+		ent:SetOwner(owner)
+		ent.FallSnd = Sound((snd_custom and snd_custom ~= nil) and snd_custom or self.FallSnd)
+
+		if clr_custom and clr_custom ~= nil and IsColor(clr_custom) then
+			ent:SetColor(clr_custom)
+		else
+			ent:SetColor(clr_garbage)
+		end
+
+		if bgs_custom and bgs_custom ~= nil and isstring(bgs_custom) then
+			ent:SetBodyGroups(bgs_custom)
+		end
+
+		local phys = ent:GetPhysicsObject()
+		if IsValid(phys) then
+			phys:SetVelocity(self:GetVelocity() + (owner:GetAimVector() * 200) + VectorRand(-50, 50))
+			phys:AddAngleVelocity(VectorRand(-100, 100))
+		end
+
+		ent:AddCallback("PhysicsCollide", PhysCallback)
+
+		if zb.CROUND and zb.CROUND ~= "hmcd" or gamemod == "sandbox" then
+			SafeRemoveEntityDelayed(ent, 30)
+		end
+	end
+
+	function SWEP:Heal(ent, mode, bone)
+		if ent:IsNPC() then
+			self:NPCHeal(ent, 0.15, "snd_jack_hmcd_bandage.wav")
 		end
 
 		local org = ent.organism
 		if not org then return end
+	
+		local owner = self:GetOwner()
+		if ent == hg.GetCurrentCharacter(owner) and hg_healanims:GetBool() then
+			self:SetHolding(math.min(self:GetHolding() + 10, 100))
+
+			if self:GetHolding() < 100 then return end
+		end
 
 		local done = self:Bandage(ent, bone)
 		if self.modeValues[1] <= 0 and self.ShouldDeleteOnFullUse then
-			self:GetOwner():SelectWeapon("weapon_hands_sh")
+			owner:SelectWeapon("weapon_hands_sh")
 			self:Remove()
 		end
 		

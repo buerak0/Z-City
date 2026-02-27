@@ -101,21 +101,10 @@ function SWEP:PrimaryAttack()
 	end
 end
 
-if CLIENT then
-	surface.CreateFont("huyhuy", {
-		font = "CloseCaption_Normal", --  Use the font-name which is shown to you by your operating system Font Viewer, not the file name
-		extended = true,
-		size = ScreenScale(15),
-		weight = 500,
-		blursize = 0,
-		scanlines = 0,
-		antialias = false,
-		strikeout = false,
-		shadow = false,
-		outline = false,
-	})
-	
 
+--// i think it's better to rewrite all of ts stuff below..
+
+if CLIENT then
 	local colWhite = Color(255, 255, 255, 255)
 	local colGray = Color(200, 200, 200, 200)
 	local lerpthing = 1

@@ -311,7 +311,9 @@ hg.armor.head = {
 		bone = "ValveBiped.Bip01_Head1",
 		model = "models/barney_helmet.mdl",
 		femPos = Vector(-1, 0, 0),
-		material = "sal/hanker",
+		material = {"sal/hanker", "models/jacky_camouflage/digi",
+		"models/jacky_camouflage/digi2", "models/lightvest/accs_diff_000_g_uni",
+		"sal/acc/armor01_2", "sal/acc/armor01_3", "sal/acc/armor01_4", "sal/acc/armor01_5"},
 		norender = true,
 		customviewrender = function(ply)
 			DrawFirstPersonHelmet(ply, "models/barney_helmet.mdl", vectors[1], -40, "sal/hanker")
