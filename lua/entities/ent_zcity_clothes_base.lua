@@ -56,7 +56,7 @@ end
 function ENT:SetupDataTables()
     self:NetworkVar( "Bool", "Equiped" )
     if SERVER then
-        self:SetEquiped(true)
+        self:SetEquiped(false)
     end
 end
 

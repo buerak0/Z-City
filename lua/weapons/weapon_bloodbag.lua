@@ -88,7 +88,7 @@ function SWEP:OwnerChanged()
 end
 
 local math = math
-local hg_healanims = GetConVar("hg_healanims")
+local hg_healanims = ConVarExists("hg_font") and GetConVar("hg_healanims") or CreateConVar("hg_healanims", 0, FCVAR_SERVER_CAN_EXECUTE, "Toggle heal/food animations", 0, 1)
 
 if SERVER then
 	function SWEP:SecondaryAttack()

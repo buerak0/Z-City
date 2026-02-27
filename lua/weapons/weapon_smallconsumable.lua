@@ -77,7 +77,7 @@ SWEP.WaterModel = {
 	["models/foodnhouseholditems/juicesmall.mdl"] = true
 }
 
-local hg_healanims = GetConVar("hg_healanims")
+local hg_healanims = ConVarExists("hg_font") and GetConVar("hg_healanims") or CreateConVar("hg_healanims", 0, FCVAR_SERVER_CAN_EXECUTE, "Toggle heal/food animations", 0, 1)
 
 if SERVER then
 	local ang_eat = Angle(6, 0, 0)
