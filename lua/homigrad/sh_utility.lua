@@ -563,7 +563,7 @@ hg.ConVars = hg.ConVars or {}
 		end
 
 		function GetAllViewPunchAngles()
-			return GetViewPunchAngles() + GetViewPunchAngles2() + GetViewPunchAngles3() + GetViewPunchAngles4()
+			return GetViewPunchAngles2() + GetViewPunchAngles3() + GetViewPunchAngles4()
 		end
 
 		function GetViewPunchAngles()
@@ -2016,7 +2016,7 @@ local IsValid = IsValid
 		local vel = ply:GetVelocity()
 		local len = vel:Length()
 		local ent = hg.GetCurrentCharacter(ply)
-
+		
 		local sprint = hg.KeyDown(ply, IN_SPEED)
 		ply.lastStepTime = CurTime() + 0.7 * (sprint and 1.5 or 1) * (1 / math_max(len, sprint and 200 or 150)) * 100
 
@@ -2028,7 +2028,7 @@ local IsValid = IsValid
 		end
 
 		hook_Run("HG_PlayerFootstep_Notify", ply, pos, foot, sound, volume, rf)	--; Do not return anything from this _Notify hook
-
+		
 		if CLIENT and ply == lply and ply.move then
 			footcl = (footcl == nil and -1 or footcl) + 1
 			if footcl > 1 then
@@ -2039,7 +2039,7 @@ local IsValid = IsValid
 			local mul = 1 * len / 300 * math_max((350 - ply.move) / 50, 0.4)
 			local mul2 = ((ply.organism.lleg or 0) * 3 + 1) * ((ply.organism.rleg or 0) * 3 + 1) * 0.5
 
-			ViewPunch(Angle(1 * len / 200 * math_max((350 - ply.move) / 50, 1) * mul2, footcl * mul * mul2, 0))
+			ViewPunch(Angle((hg_gopro:GetBool() and 5 or 1) * len / 200 * math_max((350 - ply.move) / 50, 1) * mul2, footcl * mul * mul2, 0))
 			--ViewPunch4(Angle(1 * len / 200 * math_max((350 - ply.move) / 50, 1), footcl * mul, footcl * mul * 16) * 0.05)
 		end
 

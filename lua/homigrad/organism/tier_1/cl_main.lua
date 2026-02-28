@@ -355,6 +355,7 @@ local hg_potatopc
 local old = false
 local tinnitusSoundFactor
 local lerpblood = 0
+local hg_gopro = ConVarExists("hg_gopro") and GetConVar("hg_gopro") or CreateClientConVar("hg_gopro", "0", true, false, "Toggle GoPro-like first-person camera view", 0, 1)
 hook.Add("Post Post Pre Post Processing", "organism-effects", function()
 	local spect = IsValid(lply:GetNWEntity("spect")) and lply:GetNWEntity("spect")
 	local organism = lply:Alive() and lply.organism or (viewmode == 1 and IsValid(spect) and spect.organism) or {}
@@ -409,7 +410,9 @@ hook.Add("Post Post Pre Post Processing", "organism-effects", function()
 		//lply:ScreenFade( SCREENFADE.IN, clr_black2, 2, 0.5 )
 	end
 	
-	lply:SetDSP(0)
+	--maybe 56, 30?
+	local normaldsp = hg_gopro:GetBool() and 55 or 0
+	lply:SetDSP(normaldsp)
 
 	if otrub or ((fakeTimer and fakeTimer - 2 > CurTime()) and GetConVar("hg_deathfadeout"):GetBool()) then
 		--if otrub or (fakeTimer and fakeTimer - 2 > CurTime()) then
@@ -418,7 +421,7 @@ hook.Add("Post Post Pre Post Processing", "organism-effects", function()
 		--lply:ScreenFade( SCREENFADE.IN, Color(0,0,0,255), 2, 0.5 )
 		
 		if isnumber(zb.ROUND_STATE) and (zb.ROUND_STATE ~= 1) then
-			lply:SetDSP(0)
+			lply:SetDSP(normaldsp)
 			plyCommand(lply,"soundfade "..tinnitusSoundFactor2.." 25")
 		elseif lply:Alive() then
 			lply:SetDSP(17)
@@ -430,7 +433,7 @@ hook.Add("Post Post Pre Post Processing", "organism-effects", function()
 		if ((disorientation and disorientation > 3) or (brain and brain > 0.2) or lply.PlayerClassName == "headcrabzombie" or lply:GetNetVar("headcrab")) and lply:Alive() then
 			lply:SetDSP(130)
 		else
-			lply:SetDSP((lply.suiciding and lply:Alive()) and 130 or 0)
+			lply:SetDSP((lply.suiciding and lply:Alive()) and 130 or normaldsp)
 		end
 	end
 
