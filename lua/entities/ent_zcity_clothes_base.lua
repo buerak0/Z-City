@@ -85,6 +85,7 @@ end
     function ENT:CanWear(entUser)
         local Clothes = entUser:GetNetVar("zc_clothes", {})
         if IsValid(self.WearOwner) then return false end
+
         for _,v in pairs(Clothes) do
             local cloth = Entity(v)
             if !IsValid(cloth) then continue end
@@ -149,7 +150,10 @@ end
 
         self:OnWear(entUser)
     end
-    function ENT:OnWear(entUser)   end
+
+    function ENT:OnWear(entUser)
+		--// Write your code here
+	end
 ---------------------------------------------------------------
     function ENT:Unwear(entUser, bDontChangeMaterials, noChange)
         if !noChange then
@@ -197,8 +201,12 @@ end
 
         self:OnUnwear(entUser)
     end
-    function ENT:OnUnwear(entUser)   end
+
+    function ENT:OnUnwear(entUser)
+		--// Write your code here
+	end
 --//
+
 --\\
     function ENT:OnRemove()
         if !IsValid(self.WearOwner) then return end
@@ -206,7 +214,6 @@ end
         self:Unwear(self.WearOwner)
     end
 --//
-
 
 --\\ Render clothes
     local vec = Vector(1,1,1)
@@ -267,7 +274,7 @@ end
 --//
 
 --\\ Transfer items
-    hook.Add("ItemsTransfered","TransferClothes",function(ply, ragdoll)
+    hook.Add("ItemsTransfered", "TransferClothes", function(ply, ragdoll)
         local Clothes = ply:GetNetVar("zc_clothes", {})
         if #Clothes < 1 then return end
 
