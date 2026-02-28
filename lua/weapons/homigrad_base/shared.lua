@@ -612,6 +612,8 @@ else
 	end)
 end
 
+local hg_highpitchgunfire = ConVarExists("hg_highpitchgunfire") and GetConVar("hg_highpitchgunfire") or CreateClientConVar("hg_highpitchgunfire", "0", true, false, "Toggle high pitched gunfire sounds inside buildings", 0, 1)
+
 function SWEP:EmitShoot()
 	if SERVER then return end
 	local snd_new = "sounds_zcity/"..(string.Replace(self:GetClass(),"weapon_","")).."/"
@@ -655,8 +657,11 @@ function SWEP:EmitShoot()
 
 		self:PlaySnd("zcitysnd/sound/weapons/firearms/hndg_colt1911/colt_1911_fire1.wav", nil, nil, vol * (insideVal / 16), 150, 51256, true)
 		self:PlaySnd("zcitysnd/sound/weapons/firearms/hndg_colt1911/colt_1911_fire1.wav", nil, nil, vol * (insideVal / 16), 80, 50256, true)
-		self:PlaySnd("grenades/grenade_flash_start_indoor_distant.wav", nil, nil, vol * (insideVal / 16), 80, 50257, true)
 		
+		if hg_highpitchgunfire:GetBool() or hg_gopro:GetBool() then
+			self:PlaySnd("grenades/grenade_flash_start_indoor_distant.wav", nil, nil, vol * (insideVal / 16), 80, 50257, true)
+		end
+
 		self:PlaySnd("weapons/shoot/shot1.wav", nil, nil, vol * 1, 150, 52256, true)
 	end
 	local nearDist = (GetViewEntity() == ply or GetViewEntity():GetPos():Distance( self:GetPos() ) < 150)
@@ -1801,9 +1806,9 @@ function SWEP:GetAdditionalValues()
 	local vellen = (ply:InVehicle()) and 0 or hg.GetCurrentCharacter(ply):GetVelocity():Length()
 	self.walkinglerp = Lerp(hg.lerpFrameTime(0.001,dtime), self.walkinglerp or 0, vellen)
 	self.huytime = self.huytime or 0
-	local walk = math.Clamp(self.walkinglerp / 100,0,1)
+	local walk = math.Clamp(self.walkinglerp / 100, 0, 1)
 	
-	self.huytime = self.huytime + walk * dtime * 8 * (ply:OnGround() and 1 or 0.1)
+	self.huytime = self.huytime + walk * dtime * 6.6 * (ply:OnGround() and 1 or 0.1)
 
 	--ply.oldposture = ply.posture
 	if self:IsSprinting() then
@@ -1822,7 +1827,12 @@ function SWEP:GetAdditionalValues()
 	end]]
 	
 	local lena = vellen / 150 * (ply:OnGround() and 1 or 0.1)
-	local x,y = math.cos(huy) * math.sin(huy) * walk * (antiMeta and 1 or 1) * 1.5, math.sin(huy) * walk * (antiMeta and 1 or 1) * 1.5
+	local x, y = math.cos(huy) * math.sin(huy) * walk * (antiMeta and 1 or 1) * 1.5, math.sin(huy) * walk * (antiMeta and 1 or 1) * 1.5
+	
+	if hg_gopro:GetBool() then
+		x = x * 2
+	end
+
 	self.AdditionalPosPreLerp[2] = self.AdditionalPosPreLerp[2] - walk * lena
 	self.AdditionalPosPreLerp[2] = self.AdditionalPosPreLerp[2] - x * 0.25 * (lena * 3)
 	self.AdditionalPosPreLerp[3] = self.AdditionalPosPreLerp[3] - y * 0.25 * lena
@@ -2235,7 +2245,7 @@ elseif CLIENT then
         local ent = net.ReadEntity()
         local sendtoclient = net.ReadBool()
         if IsValid(ent) and ent.PlayAnim and ( sendtoclient and sendtoclient or !ent:IsLocal()) then
-            ent:PlayAnim(tbl.anim,tbl.time,tbl.cycling,tbl.callback,tbl.reverse)
+            ent:PlayAnim(tbl.anim,tbl.data,tbl.cycling,tbl.callback,tbl.reverse)
         end
     end)
 end
@@ -2252,13 +2262,22 @@ SWEP.AnimList = {
 
 //PrintAnims(Entity(1):GetActiveWeapon():GetWM())
 //Entity(1):GetActiveWeapon():PlayAnim("idle", 1, false, nil, false, false)
-function SWEP:PlayAnim(anim, time, cycling, callback, reverse, sendtoclient)
-    --time = time * (self.StaminaReloadMul or 1)
+function SWEP:PlayAnim(anim, data, cycling, callback, reverse, sendtoclient)
+    local start = 0
+	local time = 1
+
+	if istable(data) then
+		time = data[1]
+		start = data[2]
+	else
+		time = data or time
+	end
+
 	if SERVER then
         net.Start("hg_animation")
             local netTbl = {
                 anim = anim,
-                time = time,
+                data = data,
                 cycling = cycling,
                 --callback = callback,
                 reverse = reverse
@@ -2298,7 +2317,7 @@ function SWEP:PlayAnim(anim, time, cycling, callback, reverse, sendtoclient)
 	self.tries = 10
 	self.seq = self.AnimList[anim] or anim
 	mdl:SetSequence(self.seq)
-    self.animtime = CurTime() + time
+    self.animtime = CurTime() + time - start
     self.animspeed = time
     self.cycling = cycling
     self.reverseanim = reverse

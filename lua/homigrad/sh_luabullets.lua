@@ -419,11 +419,11 @@ local function Damage(bDoDebugHit, bStartedWater, bEndNotWater, iFlags, iDamage,
 			info:SetDamageForce(vShotDir * flAmmoForce * flForce * flPhysPush)
 			info:SetAmmoType(iAmmoType)
 			info:SetReportedPosition(vSrc)
+			
+			if (fCallback) then
+				fCallback(info:GetAttacker(), tr, info, tInfo, Weapon)
+			end
 		pEntity:DispatchTraceAttack(info, tr, vShotDir)
-		
-		if (fCallback) then
-			fCallback(info:GetAttacker(), tr, info, tInfo, Weapon)
-		end
 		
 		if (bEndNotWater or bit.band(iFlags, FIRE_BULLETS_ALLOW_WATER_SURFACE_IMPACTS) ~= 0) then
 			Impact(Weapon, iAmmoDamageType, bFirstTimePredicted, vSrc, tr, sImpactEffect, sRagdollImpactEffect)
@@ -533,7 +533,7 @@ function ENTITY:FireLuaBullets(tInfo)
 	local flDistance = tInfo.Distance or MAX_TRACE_LENGTH
 	local Filter = tInfo.Filter or owner
 	
-	table.Add(Filter, hg.vehicles)
+	//table.Add(Filter, hg.vehicles)
 
 	local iFlags = tInfo.Flags or 0
 	local flForce = tInfo.Force or 1
