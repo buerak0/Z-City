@@ -567,7 +567,7 @@ function zb:RoundStart()
 	zb.START_TIME = nil
 
 	local mode, round = CurrentRound()
-	
+	hook.Run("TTTPrepareRound") -- stormfox2 random_round_weather
 
 	VFIRE_DISABLED = (mode.name == "coop")
 
