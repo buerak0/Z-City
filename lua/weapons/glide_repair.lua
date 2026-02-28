@@ -88,13 +88,27 @@ function SWEP:Think()
 end
 
 local CurTime = CurTime
-local REPAIR_SOUND = "glide/train/track_clank_%d.wav"
 local anims_rnd = {
 	ACT_HL2MP_GESTURE_RANGE_ATTACK_KNIFE,
 	ACT_HL2MP_GESTURE_RANGE_ATTACK_MELEE,
 	ACT_HL2MP_GESTURE_RANGE_ATTACK_FIST,
 	ACT_HL2MP_GESTURE_RANGE_ATTACK_SLAM,
 	ACT_HL2MP_GESTURE_RANGE_ATTACK_PISTOL
+}
+
+local sounds_rnd = {
+	"snds_jack_gmod/ez_tools/1.wav",
+	"snds_jack_gmod/ez_tools/10.wav",
+	"snds_jack_gmod/ez_tools/11.wav",
+	"snds_jack_gmod/ez_tools/12.wav",
+	"snds_jack_gmod/ez_tools/13.wav",
+	"snds_jack_gmod/ez_tools/2.wav",
+	"snds_jack_gmod/ez_tools/21.wav",
+	"snds_jack_gmod/ez_tools/22.wav",
+	"snds_jack_gmod/ez_tools/23.wav",
+	"snds_jack_gmod/ez_tools/24.wav",
+	"snds_jack_gmod/ez_tools/9.wav",
+	"snds_jack_gmod/ez_tools/hit.wav"
 }
 
 function SWEP:PrimaryAttack()
@@ -123,7 +137,7 @@ function SWEP:PrimaryAttack()
         for i = 1, #rotors do
             if not IsValid( rotors[i] ) then
                 ent:Repair()
-                user:EmitSound( "buttons/lever4.wav", 75, 150, 0.3 )
+                user:EmitSound( "snds_jack_gmod/ez_tools/25.wav", 75, math.random(90, 110), 0.5 )
                 break
             end
         end
@@ -143,7 +157,7 @@ function SWEP:PrimaryAttack()
             ent:SetIsEngineOnFire( false )
         end
 
-        user:EmitSound( REPAIR_SOUND:format( math.random( 6 ) ), 75, 150, 0.2 )
+        user:EmitSound( sounds_rnd[math.random(#sounds_rnd)], 75, math.random(95, 115), 0.5 )
     end
 
     if chassisHealth > ent.MaxChassisHealth then
@@ -151,7 +165,7 @@ function SWEP:PrimaryAttack()
         engineHealth = 1
 
         ent:Repair()
-        user:EmitSound( "buttons/lever6.wav", 75, math.random( 110, 120 ), 0.5 )
+        user:EmitSound( "snds_jack_gmod/ez_tools/25.wav", 75, math.random(90, 105), 0.8 )
     end
 
     if chassisHealth >= ent.MaxChassisHealth then

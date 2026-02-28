@@ -55,13 +55,16 @@ hg.settings:AddOpt("Gameplay","hg_gary", "HG GARY")
 hg.settings:AddOpt("Gameplay","hg_deathfadeout", "Death fade out")
 --hg_gary
 --hg_deathfadeout
-hg.settings:AddOpt("Serverside gameplay","hg_toughnpcs", "Tough npcs")
-hg.settings:AddOpt("Serverside gameplay","hg_thirdperson", "Thirdperson (WIP)")
-hg.settings:AddOpt("Serverside gameplay","hg_legacycam", "Legacy camera")
-hg.settings:AddOpt("Serverside gameplay","hg_ragdollcombat", "Ragdoll combat mode")
-hg.settings:AddOpt("Serverside gameplay","hg_movement_stamina_debuff", "Movement stamina debuff")
-hg.settings:AddOpt("Serverside gameplay","hg_furcity", "Furcity")
-hg.settings:AddOpt("Serverside gameplay","hg_appearance_access_for_all", "Appearance full access for all", nil, nil, "bool")
+if not game.IsDedicated() then
+	hg.settings:AddOpt("Serverside gameplay","hg_toughnpcs", "Tough npcs")
+	hg.settings:AddOpt("Serverside gameplay","hg_thirdperson", "Thirdperson (WIP)")
+	hg.settings:AddOpt("Serverside gameplay","hg_legacycam", "Legacy camera")
+	hg.settings:AddOpt("Serverside gameplay","hg_ragdollcombat", "Ragdoll combat mode")
+	hg.settings:AddOpt("Serverside gameplay","hg_movement_stamina_debuff", "Movement stamina debuff")
+	hg.settings:AddOpt("Serverside gameplay","hg_furcity", "Furcity")
+	hg.settings:AddOpt("Serverside gameplay","hg_appearance_access_for_all", "Appearance full access for all", nil, nil, "bool")
+	hg.settings:AddOpt("Serverside gameplay","hg_healanims", "Heal & food animations")
+end
 --hg_appearance_access_for_all
 --hg_furcity
 --hg_legacycam
